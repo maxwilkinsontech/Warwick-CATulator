@@ -20,7 +20,6 @@ class Module(models.Model):
     faculty = models.CharField(max_length=50)
     module_code = models.CharField(max_length=10)
     module_name = models.CharField(max_length=100)
-    module_cats = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return '[' + self.module_code + '] ' + self.module_name
@@ -36,6 +35,7 @@ class AssessmentGroup(models.Model):
     """
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assessment_groups')
     assessment_group_name = models.CharField(max_length=50)
+    module_cats = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return self.assessment_group_name
