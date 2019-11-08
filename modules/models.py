@@ -3,6 +3,9 @@ from django.db import models
 class Module(models.Model):
     """
     Stores a single Module entry
+
+    Several Modules are taken by student each year. The Assessments of Modules
+    can vary for year to year. Not all Modules are weighted the same.
     """    
     ACADEMIC_YEARS = (
         ('19/20', '19/20'),
@@ -26,7 +29,11 @@ class Module(models.Model):
 class AssessmentGroup(models.Model):
     """
     Stores a single AssessmentGroup entry, related to
-    :model:'modules.Module' and 
+    :model:'modules.Module'
+
+    A Module can have several AssessmentGroups, each taken by different
+    cohorts of students. Each AssessmentGroup can be made up of different 
+    Assessments. 
     """
     module = models.ForeignKey(Module, on_delete=models.CASCADE)
     Assessment_group_name = models.CharField(max_length=50)
@@ -35,6 +42,10 @@ class Assessment(models.Model):
     """
     Stores a single Assessment entry, related to
     :model:'modules.AssessmentGroup'
+
+    An Assessment is one of the ways a Module is graded upon. Each Module
+    can have different AssessmentGroups which in turn can have different
+    Assessments.
     """
     assessment_name = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=4, decimal_places=1)
