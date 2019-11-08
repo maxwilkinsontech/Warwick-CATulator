@@ -39,7 +39,6 @@ def get_module_info(request_data, link, module_link):
     module_code = module_info[0].text.split(': ')[1]
     module_name = module_info[1].text.split(': ')[1]
     module_faculty = module_info[2].text.split(': ')[1]
-    module_cats = module_info[3].text.split(': ')[1]
 
     module = Module.objects.create(
         level=request_data[1],
@@ -47,37 +46,41 @@ def get_module_info(request_data, link, module_link):
         faculty=module_faculty,
         module_code=module_code,
         module_name=module_name,
-        module_cats=module_cats
     )
 
     # Get the assessment infomation for the module
-    assessment_groups = soup.find('table', class_='table table-striped').find('tbody').findAll('tr')
-    # create a dictionary, key is the name of the AssessmentGroup and value
-    # is a list of Assessments
-    assessment_groups_dict = {}
-    prev_assessment_name = None
-    for row in assessment_groups[1:]:
-        cols = row.findAll('td')
-        assessment_name = cols[0].text.strip()
+    assessment_groups_table = soup.find('table', class_='table table-striped').findAll('tbody')
 
-        if len(assessment_name) > 1:
-            assessment_groups_dict[assessment_name] = [[cols[1].text, cols[2].text]]
-            prev_assessment_name = assessment_name
-        else:
-            assessment_groups_dict.get(prev_assessment_name, []).append([cols[1].text, cols[2].text])
-    
-    for key, value in assessment_groups_dict.items():
-        assessment_group = AssessmentGroup.objects.create(
-            module=module,
-            assessment_group_name=key
-        )
+    for body in assessment_groups_table:
+        assessment_groups = body.findAll('tr')
+        # create a dictionary, key is the name of the AssessmentGroup and value
+        # is a list of Assessments
+        assessment_groups_dict = {}
+        prev_assessment_name = None
+        for row in assessment_groups[1:]:
+            cols = row.findAll('td')
+            assessment_name = cols[0].text.strip()
 
-        for assessment in value:
-            Assessment.objects.create(
-                assessment_group=assessment_group,
-                assessment_name=assessment[0],
-                percentage=float(assessment[1].strip('%'))
+            if len(assessment_name) > 1:
+                cats = assessment_groups[0].find('th').text.split(' ')[0]
+                assessment_groups_dict[assessment_name] = [[cats, cols[1].text, cols[2].text]]
+                prev_assessment_name = assessment_name
+            else:
+                assessment_groups_dict.get(prev_assessment_name, []).append([None, cols[1].text, cols[2].text])
+        
+        for key, value in assessment_groups_dict.items():
+            assessment_group = AssessmentGroup.objects.create(
+                module=module,
+                assessment_group_name=key,
+                module_cats=value[0][0]
             )
+
+            for assessment in value:
+                Assessment.objects.create(
+                    assessment_group=assessment_group,
+                    assessment_name=assessment[1],
+                    percentage=float(assessment[2].strip('%'))
+                )
 
 crawlable_links = [
     ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
