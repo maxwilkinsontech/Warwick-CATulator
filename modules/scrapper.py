@@ -62,10 +62,9 @@ def get_module_info(request_data, link, module_link):
 
         if len(assessment_name) > 1:
             assessment_groups_dict[assessment_name] = [[cols[1].text, cols[2].text]]
+            prev_assessment_name = assessment_name
         else:
             assessment_groups_dict.get(prev_assessment_name, []).append([cols[1].text, cols[2].text])
-
-        prev_assessment_name = assessment_name
     
     for key, value in assessment_groups_dict.items():
         assessment_group = AssessmentGroup.objects.create(

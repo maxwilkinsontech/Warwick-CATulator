@@ -50,7 +50,7 @@ class Assessment(models.Model):
     Assessments.
     """
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='assessments')
-    assessment_name = models.CharField(max_length=50)
+    assessment_name = models.CharField(max_length=100)
     percentage = models.DecimalField(max_digits=4, decimal_places=1)
     uses_worst_result = models.BooleanField(default=False)
 
