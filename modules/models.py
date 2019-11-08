@@ -35,7 +35,7 @@ class AssessmentGroup(models.Model):
     cohorts of students. Each AssessmentGroup can be made up of different 
     Assessments. 
     """
-    module = models.ForeignKey(Module, on_delete=models.CASCADE)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assessment_groups')
     Assessment_group_name = models.CharField(max_length=50)
 
 class Assessment(models.Model):
@@ -47,6 +47,7 @@ class Assessment(models.Model):
     can have different AssessmentGroups which in turn can have different
     Assessments.
     """
+    assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='assessments')
     assessment_name = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=4, decimal_places=1)
     uses_worst_result = models.BooleanField(default=False)
