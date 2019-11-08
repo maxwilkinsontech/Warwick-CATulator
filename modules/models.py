@@ -13,7 +13,6 @@ class Module(models.Model):
         ('17/18', '17/18'),
         ('16/17', '16/17'),
         ('15/16', '15/16'),
-        ('14/15', '14/15'),
     )
 
     level = models.CharField(max_length=15)
@@ -21,7 +20,7 @@ class Module(models.Model):
     faculty = models.CharField(max_length=50)
     module_code = models.CharField(max_length=10)
     module_name = models.CharField(max_length=100)
-    cats = models.PositiveSmallIntegerField()
+    module_cats = models.PositiveSmallIntegerField()
 
     def __str__(self):
         return '[' + self.module_code + '] ' + self.module_name
@@ -36,7 +35,7 @@ class AssessmentGroup(models.Model):
     Assessments. 
     """
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assessment_groups')
-    Assessment_group_name = models.CharField(max_length=50)
+    assessment_group_name = models.CharField(max_length=50)
 
 class Assessment(models.Model):
     """
