@@ -7,7 +7,7 @@ import urllib.request
 import time
 from bs4 import BeautifulSoup
 
-# from modules.models import Module, AssessmentGroup, Assessment
+from .models import Module, AssessmentGroup, Assessment
 
 def get_faculties(request_data):
     """Get all the factulties for the undergraduate."""
@@ -18,8 +18,6 @@ def get_faculties(request_data):
         for litag in ultag.findAll('li'):
             faculty_modules_link = litag.find('a')['href']
             get_faculty_modules(request_data, faculty_modules_link)
-            break
-        break
 
 def get_faculty_modules(request_data, link):
     url = request_data[2] + link
@@ -30,8 +28,6 @@ def get_faculty_modules(request_data, link):
         for litag in ultag.findAll('li'):
             module_link = litag.find('a')['href']
             get_module_info(request_data, link, module_link)
-            break
-        break
             
 def get_module_info(request_data, link, module_link):
     url = request_data[2] + link + '/' + module_link
@@ -51,7 +47,7 @@ def get_module_info(request_data, link, module_link):
         faculty=module_faculty,
         module_code=module_code,
         module_name=module_name,
-        cats=module_cats
+        module_cats=module_cats
     )
 
     # Get the assessment infomation for the module
@@ -67,7 +63,7 @@ def get_module_info(request_data, link, module_link):
         if len(assessment_name) > 1:
             assessment_groups_dict[assessment_name] = [[cols[1].text, cols[2].text]]
         else:
-            a = assessment_groups_dict[prev_assessment].append([cols[1].text, cols[2].text])
+            assessment_groups_dict.get(prev_assessment_name, []).append([cols[1].text, cols[2].text])
 
         prev_assessment_name = assessment_name
     
@@ -81,7 +77,7 @@ def get_module_info(request_data, link, module_link):
             Assessment.objects.create(
                 assessment_group=assessment_group,
                 assessment_name=assessment[0],
-                percentage=decimal(assessment[1])
+                percentage=float(assessment[1].strip('%'))
             )
 
 crawlable_links = [
@@ -92,4 +88,7 @@ crawlable_links = [
     ['15/16', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate-1516']
 ]
 
-get_faculties(crawlable_links[0])
+
+
+def start():
+    get_faculties(crawlable_links[0])

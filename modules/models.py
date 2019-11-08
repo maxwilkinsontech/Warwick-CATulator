@@ -37,6 +37,9 @@ class AssessmentGroup(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assessment_groups')
     assessment_group_name = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.assessment_group_name
+
 class Assessment(models.Model):
     """
     Stores a single Assessment entry, related to
@@ -50,3 +53,6 @@ class Assessment(models.Model):
     assessment_name = models.CharField(max_length=50)
     percentage = models.DecimalField(max_digits=4, decimal_places=1)
     uses_worst_result = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.assessment_name
