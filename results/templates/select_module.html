@@ -9,12 +9,13 @@
         <form method="POST">
             {% csrf_token %}
             <div>
-                <h1>Select Module</h1>
+                <h2 class="font-weight-light">1) Select Module</h2>
+                <p class="text-muted">Please select a module from the dropdown as well as the academic year you took it.</p>
                 {{ form }}
             </div>
             <div id="assessment_group_div">
                 <div id="assessment_group_table"></div>
-                <button type="button" id="select_assessment_group" style="display: none">Next</button>
+                <button type="button" id="select_assessment_group" class="btn btn-primary btn-block" style="display: none">Next</button>
             </div>
             <div id="assessment_result_div">
                 <div id="assessment_result_input"></div>
@@ -28,6 +29,7 @@
         $("#id_module_code, #id_academic_year").change(function () {
             $("#assessment_group_div").hide();
             $("#assessment_result_div").hide();
+            $("#input[name=groups]").prop("readonly", false);
 
             var module_code = $("#id_module_code").find(":selected").text();
             var academic_year = $("#id_academic_year").val();
@@ -59,6 +61,8 @@
                 success: function (data) {
                     $("#assessment_result_div").show();
                     $('#assessment_result_input').html(data);
+                    $('#select_assessment_group').hide();
+                   $(':radio:not(:checked)').attr('disabled', true);
                 }
             });
         });

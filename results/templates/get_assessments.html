@@ -1,11 +1,12 @@
 <div>
-    <h1>Enter Assessment Results</h1>
-    <p>
-        Fill in as many or few assessment results as you have available to you at the moment. You can add and 
-        edit results for assessments in the future.
-    </p>
-    <input type="number" name="year" required>
-    <table class="table table-bordered">
+    <h2 class="font-weight-light">3) Enter Assessment Results</h2>
+    <p class="text-muted">Fill in as many or few assessment results as you have available to you at the moment. You can add and
+    edit results for assessments in the future.</p>
+    <div class="form-group">
+        <input type="number" class="form-control" name="year" placeholder="Course year">
+        <small id="yearHelp" class="form-text text-muted">Optional: Enter the year you are taking (or took) this module e.g. 1 for first year</small>
+    </div>
+    <table class="table table-bordered mb-1">
         <thead>
             <th>Assessment Name</th>
             <th>Percentage</th>
@@ -15,13 +16,14 @@
             {% for assessment in assessments %}
                 <tr>
                     <td>{{ assessment.assessment_name }}</td>
-                    <td>{{ assessment.percentage }}</td>
+                    <td>{{ assessment.percentage.normalize }}%</td>
                     <td>
-                        <input type="number" name="{{ assessment.id }}"/>
+                        <input type="number" name="{{ assessment.id }}" class="form-control">
                     </td>
                 </tr>
             {% endfor %}
         </tbody>
     </table>
-    <button type="submit">Finish</button>
+    <small class="form-text text-muted mb-4">Result must be a number between 0-100 where 100=100%. Please only include 1 decimal place of precision.</small>
+    <button type="submit" class="btn btn-primary btn-block">Finish</button>
 </div>
