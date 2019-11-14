@@ -40,47 +40,49 @@ def get_module_info(request_data, link, module_link):
     module_name = module_info[1].text.split(': ')[1]
     module_faculty = module_info[2].text.split(': ')[1]
 
-    module = Module.objects.create(
-        level=request_data[1],
-        academic_year=request_data[0],
-        faculty=module_faculty,
-        module_code=module_code,
-        module_name=module_name,
-    )
+    if not Module.objects.filter(module_code=module_code).exists():
 
-    # Get the assessment infomation for the module
-    assessment_groups_table = soup.find('table', class_='table table-striped').findAll('tbody')
+        module = Module.objects.create(
+            level=request_data[1],
+            academic_year=request_data[0],
+            faculty=module_faculty,
+            module_code=module_code,
+            module_name=module_name,
+        )
 
-    for body in assessment_groups_table:
-        assessment_groups = body.findAll('tr')
-        # create a dictionary, key is the name of the AssessmentGroup and value
-        # is a list of Assessments
-        assessment_groups_dict = {}
-        prev_assessment_name = None
-        for row in assessment_groups[1:]:
-            cols = row.findAll('td')
-            assessment_name = cols[0].text.strip()
+        # Get the assessment infomation for the module
+        assessment_groups_table = soup.find('table', class_='table table-striped').findAll('tbody')
 
-            if len(assessment_name) > 1:
-                cats = assessment_groups[0].find('th').text.split(' ')[0]
-                assessment_groups_dict[assessment_name] = [[cats, cols[1].text, cols[2].text]]
-                prev_assessment_name = assessment_name
-            else:
-                assessment_groups_dict.get(prev_assessment_name, []).append([None, cols[1].text, cols[2].text])
-        
-        for key, value in assessment_groups_dict.items():
-            assessment_group = AssessmentGroup.objects.create(
-                module=module,
-                assessment_group_name=key,
-                module_cats=value[0][0]
-            )
+        for body in assessment_groups_table:
+            assessment_groups = body.findAll('tr')
+            # create a dictionary, key is the name of the AssessmentGroup and value
+            # is a list of Assessments
+            assessment_groups_dict = {}
+            prev_assessment_name = None
+            for row in assessment_groups[1:]:
+                cols = row.findAll('td')
+                assessment_name = cols[0].text.strip()
 
-            for assessment in value:
-                Assessment.objects.create(
-                    assessment_group=assessment_group,
-                    assessment_name=assessment[1],
-                    percentage=float(assessment[2].strip('%'))
+                if len(assessment_name) > 1:
+                    cats = assessment_groups[0].find('th').text.split(' ')[0]
+                    assessment_groups_dict[assessment_name] = [[cats, cols[1].text, cols[2].text]]
+                    prev_assessment_name = assessment_name
+                else:
+                    assessment_groups_dict.get(prev_assessment_name, []).append([None, cols[1].text, cols[2].text])
+            
+            for key, value in assessment_groups_dict.items():
+                assessment_group = AssessmentGroup.objects.create(
+                    module=module,
+                    assessment_group_name=key,
+                    module_cats=value[0][0]
                 )
+
+                for assessment in value:
+                    Assessment.objects.create(
+                        assessment_group=assessment_group,
+                        assessment_name=assessment[1],
+                        percentage=float(assessment[2].strip('%'))
+                    )
 
 crawlable_links = [
     ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
@@ -90,7 +92,7 @@ crawlable_links = [
     ['15/16', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate-1516']
 ]
 
-
-
 def start():
+    print('*** Starting Module Scrape ***')
     get_faculties(crawlable_links[0])
+    print('*** Finished Module Scrape ***')

@@ -22,7 +22,7 @@ class Module(models.Model):
     module_name = models.CharField(max_length=100)
 
     def __str__(self):
-        return '[' + self.module_code + '] ' + self.module_name
+        return self.module_code
 
 class AssessmentGroup(models.Model):
     """
@@ -39,6 +39,9 @@ class AssessmentGroup(models.Model):
 
     def __str__(self):
         return self.assessment_group_name
+
+    class Meta:
+        ordering = ['assessment_group_name']
 
 class Assessment(models.Model):
     """

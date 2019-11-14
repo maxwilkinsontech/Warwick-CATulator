@@ -1,0 +1,27 @@
+<div>
+    <h1>Enter Assessment Results</h1>
+    <p>
+        Fill in as many or few assessment results as you have available to you at the moment. You can add and 
+        edit results for assessments in the future.
+    </p>
+    <input type="number" name="year">
+    <table class="table table-bordered">
+        <thead>
+            <th>Assessment Name</th>
+            <th>Percentage</th>
+            <th>Your Result</th>
+        </thead>
+        <tbody>
+            {% for assessment in assessments %}
+                <tr>
+                    <td>{{ assessment.assessment_name }}</td>
+                    <td>{{ assessment.percentage }}</td>
+                    <td>
+                        <input type="number" name="{{ assessment.id }}"/>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <button type="submit">Finish</button>
+</div>

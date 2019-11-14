@@ -1,0 +1,29 @@
+
+<div>
+    <h1>Select Assessment Group</h1>
+    <table class="table table-bordered">
+        <thead>
+            <th>Assessent Group</th>
+            <th>Assessment Name</th>
+            <th>Percentage</th>
+        </thead>
+        <tbody>
+            {% for group in assessment_groups %}
+                {% for assessment in group.assessments.all %}
+                    <tr>
+                        <td>
+                            {% if forloop.counter == 1 %}
+                                <input type="radio" id="{{ group.id }}" value="{{ group.id }}" name="groups" {% if forloop.parentloop.counter == 1 %}checked{% endif %}>
+                                <label for="{{ group.id }}">{{ group.assessment_group_name }} [{{ group.module_cats.normalize }} CATS]</label>
+                            {% endif %}
+                        </td>
+                        <td>{{ assessment.assessment_name }}</td>
+                        <td>{{ assessment.percentage.normalize }}%</td>
+                    </tr>
+                {% endfor %}
+            {% empty %}
+                <p>There has been an error. Please go back and try again.</p>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

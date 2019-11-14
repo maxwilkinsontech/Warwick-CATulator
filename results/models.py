@@ -13,6 +13,7 @@ class YearGrade(models.Model):
     the year for the student.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grades')
+    year = models.PositiveSmallIntegerField()
 
 class ModuleResult(models.Model):
     """
@@ -28,7 +29,7 @@ class ModuleResult(models.Model):
     year = models.ForeignKey(YearGrade, on_delete=models.CASCADE, related_name='module_results', null=True)
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_results')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
-    course_year = models.PositiveSmallIntegerField(null=True)
+    # course_year = models.PositiveSmallIntegerField(null=True)
 
 class AssessmentResult(models.Model):
     """
