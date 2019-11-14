@@ -15,11 +15,15 @@ class YearGrade(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grades')
     year = models.PositiveSmallIntegerField()
 
+    def __str__(self):
+        return '[' + str(self.year) + ']' + ' ' + self.user.get_full_name()
+
 class ModuleResult(models.Model):
     """
     Stores a single ModuleResult entry, related to
     :model:'user.User' and
     :model:'results.YearGrade' and 
+    :model:'modules.Module' and 
     :model:'modules.AssessmentGroup'
 
     ModuleResult stores the reverse ForeignKeys to the Assessment results
@@ -27,9 +31,12 @@ class ModuleResult(models.Model):
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_results')
     year = models.ForeignKey(YearGrade, on_delete=models.CASCADE, related_name='module_results', null=True)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_results')
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_results')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
-    # course_year = models.PositiveSmallIntegerField(null=True)
+
+    def __str__(self):
+        return self.module.module_code
 
 class AssessmentResult(models.Model):
     """
@@ -41,4 +48,7 @@ class AssessmentResult(models.Model):
     """
     module_result = models.ForeignKey(ModuleResult, on_delete=models.CASCADE, related_name='assessment_results')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_results')
-    result = models.DecimalField(max_digits=4, decimal_places=1)
+    result = models.DecimalField(max_digits=4, decimal_places=1, null=True)
+
+    def __str__(self):
+        return self.assessment.assessment_name

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.loader import render_to_string
 from django.http import HttpResponse
 
@@ -6,11 +6,13 @@ from .forms import ModuleForm
 from .models import YearGrade, ModuleResult, AssessmentResult
 from modules.models import Module, AssessmentGroup
 
-def select_module(request):
-    """Return page on GET and save assessment results on POST"""
-    if request.method == 'POST':
-        print(request.POST)
+def dashboard(request):
+    """Display the user's Modules"""
+    return render(request, 'dashboard.html')
 
+def select_module(request):
+    """Return page on GET and save Assessment results on POST"""
+    if request.method == 'POST':
         year = request.POST.get('year')
         year_grade = None
         if year:
@@ -18,33 +20,37 @@ def select_module(request):
                 user=request.user,
                 year=year
             )
-        
-        # TODO: check doesn't already exist
-        # module_result = ModuleResult.objects.create(
-        #     module= ,
-        #     year=year_grade,
-        #     assessment_group=,
-        #     academic_year= ,
-        # )
 
-        for assessment_result in self.request.POST:
-            if exercise_name not in ['csrfmiddlewaretoken', 'year']:
-                # TODO: CHECK DOESN'T ALREADY EXIST
-                assessment = AssessmentResult.objects.create(
-                    
-                )
+        assessment_group = get_object_or_404(AssessmentGroup, pk=request.POST.get('groups'))
+        module_result, assessment_group_created = ModuleResult.objects.get_or_create(
+            user=request.user,
+            year=year_grade,
+            module=assessment_group.module,
+            assessment_group=assessment_group,
+            academic_year=request.POST.get('academic_year')
+        )
 
-                weight = self.request.POST.get(exercise_name)
-                if weight != '' and weight is not None:
-                    ExerciseWeightInput.objects.create(
-                        workout=self.get_object(),
-                        exercise=exercise,
-                        user=user,
-                        weight=float(weight)
+        for assessment_result_id in request.POST:
+            if assessment_result_id not in ['csrfmiddlewaretoken', 'year', 'module_code', 'academic_year', 'groups']:
+                result = request.POST.get(assessment_result_id, '')
+                if result == '':
+                    result = None
+
+                try:
+                    assessment = AssessmentResult.objects.get(
+                        module_result=module_result,
+                        assessment_id=assessment_result_id
+                    )
+                    assessment.result = result
+                    assessment.save()
+                except AssessmentResult.DoesNotExist:
+                    assessment = AssessmentResult.objects.create(
+                        module_result=module_result,
+                        assessment_id=assessment_result_id,
+                        result=result
                     )
 
-
-
+        return redirect('dashboard')
     else:
         form = ModuleForm()
     
@@ -55,21 +61,17 @@ def get_assessment_group(request):
     and acadmic year"""
     module_code = request.GET.get('module_code')
     academic_year = request.GET.get('academic_year')
-
     module = Module.objects.get(module_code=module_code, academic_year=academic_year)
-    context = {
-        'assessment_groups': module.assessment_groups.all()
-    }
+
+    context = {'assessment_groups': module.assessment_groups.all()}
     html = render_to_string('get_assessment_group.html', context)
     return HttpResponse(html)
 
 def get_assessments(request):
     """Return a table with the Assessments for the given AssessmentGroup"""
     assessment_group_id = request.GET.get('assessment_group_id')
-
     assessment_group = AssessmentGroup.objects.get(pk=assessment_group_id)
-    context = {
-        'assessments': assessment_group.assessments.all()
-    }
+
+    context = {'assessments': assessment_group.assessments.all()}
     html = render_to_string('get_assessments.html', context)
     return HttpResponse(html)
