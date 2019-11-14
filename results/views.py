@@ -6,6 +6,9 @@ from .forms import ModuleForm
 from .models import YearGrade, ModuleResult, AssessmentResult
 from modules.models import Module, AssessmentGroup
 
+def home(request):
+    return render(request, 'index.html')
+
 def dashboard(request):
     """Display the user's Modules"""
     return render(request, 'dashboard.html')
