@@ -1,29 +1,37 @@
 <div>
-    <h2 class="font-weight-light">3) Enter Assessment Results</h2>
-    <p class="text-muted">Fill in as many or few assessment results as you have available to you at the moment. You can add and
-    edit results for assessments in the future.</p>
+    <h2 class="font-weight-light mt-4">3) Enter Assessment Results</h2>
+    <p class="text-muted">Fill in as many or few assessment results as you have available to you at the moment. You can add/edit 
+        results for assessments in the future.</p>
     <div class="form-group">
-        <input type="number" class="form-control" name="year" placeholder="Course year">
+        <input type="number" min="1" max="10" class="form-control" name="year" placeholder="Course year">
         <small id="yearHelp" class="form-text text-muted">Optional: Enter the year you are taking (or took) this module e.g. 1 for first year</small>
     </div>
-    <table class="table table-bordered mb-1">
-        <thead>
-            <th>Assessment Name</th>
-            <th>Percentage</th>
-            <th>Your Result</th>
-        </thead>
-        <tbody>
-            {% for assessment in assessments %}
-                <tr>
-                    <td>{{ assessment.assessment_name }}</td>
-                    <td>{{ assessment.percentage.normalize }}%</td>
-                    <td>
-                        <input type="number" name="{{ assessment.id }}" class="form-control">
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <p class="text-muted">Tip: You can leave all fields blank if just want to add the module to your dashboard.</p>
+    <div style="overflow-x: auto">
+        <table class="table table-bordered mb-1">
+            <thead>
+                <th>Assessment Name</th>
+                <th>Percentage</th>
+                <th>Your Result</th>
+            </thead>
+            <tbody>
+                {% for assessment in assessments %}
+                    <tr>
+                        <td>{{ assessment.assessment_name }}</td>
+                        <td>{{ assessment.percentage.normalize }}%</td>
+                        <td>
+                            <div class="input-group">
+                                <input type="number" min="0" max="100" step="0.1" name="{{ assessment.id }}" class="form-control">
+                                <span class="input-group-append">
+                                    <span class="input-group-text px-1">%</span>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>    
+    </div>
     <small class="form-text text-muted mb-4">Result must be a number between 0-100 where 100=100%. Please only include 1 decimal place of precision.</small>
     <button type="submit" class="btn btn-primary btn-block">Finish</button>
 </div>

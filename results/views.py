@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
-from django.http import HttpResponse
+from django.views.generic import DetailView
 
 from .forms import ModuleForm
 from .models import YearGrade, ModuleResult, AssessmentResult
@@ -11,14 +12,35 @@ def home(request):
 
 def dashboard(request):
     """Display the user's Modules"""
-    return render(request, 'dashboard.html')
+    user = request.user
+    years = user.grades.all()
+    # results = user.module_results.all()
+
+    context = {
+        'years': years
+    }
+    # context = {'years': years}
+    # for year in years:
+    #     context[str(year.year)] = results.filter(year=year)
+    #     results.exclude(year=year)
+    # context['unspecified_year'] = results
+
+    return render(request, 'dashboard.html', context)
+
+class ViewModuleResult(DetailView):
+    template_name = 'view_module_result.html'
+    model = ModuleResult
+
+    def post(self, request):
+        pass
+
 
 def select_module(request):
     """Return page on GET and save Assessment results on POST"""
     if request.method == 'POST':
         year = request.POST.get('year')
         year_grade = None
-        if year:
+        if year is not None:
             year_grade, created = YearGrade.objects.get_or_create(
                 user=request.user,
                 year=year
@@ -64,6 +86,11 @@ def get_assessment_group(request):
     and acadmic year"""
     module_code = request.GET.get('module_code')
     academic_year = request.GET.get('academic_year')
+
+    # Catch the module being the default input option
+    if module_code == '---------':
+        return HttpResponseBadRequest()
+
     module = Module.objects.get(module_code=module_code, academic_year=academic_year)
 
     context = {'assessment_groups': module.assessment_groups.all()}

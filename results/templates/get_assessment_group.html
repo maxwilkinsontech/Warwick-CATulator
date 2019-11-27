@@ -1,30 +1,34 @@
 
 <div>
-    <h2 class="font-weight-light">2) Select Assessment Group</h2>
+    <h2 class="font-weight-light mt-4">2) Select Assessment Group <i id="check-2" class="fas fa-check" style="display: none;"></i></h2>
     <p class="text-muted">Please select the way you were assessed for this module.</p>
-    <table class="table table-bordered">
-        <thead>
-            <th>Assessent Group</th>
-            <th>Assessment Name</th>
-            <th>Percentage</th>
-        </thead>
-        <tbody>
-            {% for group in assessment_groups %}
-                {% for assessment in group.assessments.all %}
-                    <tr>
-                        <td>
-                            {% if forloop.counter == 1 %}
-                                <input type="radio" id="{{ group.id }}" value="{{ group.id }}" name="groups" {% if forloop.parentloop.counter == 1 %}checked{% endif %}>
-                                <label for="{{ group.id }}">{{ group.assessment_group_name }} [{{ group.module_cats.normalize }} CATS]</label>
-                            {% endif %}
-                        </td>
-                        <td>{{ assessment.assessment_name }}</td>
-                        <td>{{ assessment.percentage.normalize }}%</td>
-                    </tr>
+    <div style="overflow-x: auto">
+        <table class="table table-bordered">
+            <thead>
+                <th>Assessent Group</th>
+                <th>Assessment Name</th>
+                <th>Percentage</th>
+            </thead>
+            <tbody>
+                {% for group in assessment_groups %}
+                    {% for assessment in group.assessments.all %}
+                        <tr>
+                            <td>
+                                {% if forloop.counter == 1 %}
+                                    <label for="{{ group.id }}">
+                                    <input type="radio" id="{{ group.id }}" value="{{ group.id }}" name="groups" {% if forloop.parentloop.counter == 1 %}checked{% endif %}>
+                                    {{ group.assessment_group_name }} [{{ group.module_cats.normalize }} CATS]
+                                    </label>
+                                {% endif %}
+                            </td>
+                            <td>{{ assessment.assessment_name }}</td>
+                            <td>{{ assessment.percentage.normalize }}%</td>
+                        </tr>
+                    {% endfor %}
+                {% empty %}
+                    <p>There has been an error. Please go back and try again.</p>
                 {% endfor %}
-            {% empty %}
-                <p>There has been an error. Please go back and try again.</p>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 </div>

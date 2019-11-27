@@ -9,8 +9,8 @@
         <form method="POST">
             {% csrf_token %}
             <div>
-                <h2 class="font-weight-light">1) Select Module</h2>
-                <p class="text-muted">Please select a module from the dropdown as well as the academic year you took it.</p>
+                <h2 class="font-weight-light">1) Select Module <i id="check-1" class="fas fa-check" style="display: none;"></i></h2>
+                <p class="text-muted">Please select a module from the dropdown as well as the academic year in which you took it.</p>
                 {{ form }}
             </div>
             <div id="assessment_group_div">
@@ -45,6 +45,10 @@
                     $("#assessment_group_div").show();
                     $('#assessment_group_table').html(data);
                     $('#select_assessment_group').show();
+                    $('#check-1').show();
+                },
+                error: function(err) {
+                    $('#check-1').hide();
                 }
             });
         });
@@ -62,7 +66,8 @@
                     $("#assessment_result_div").show();
                     $('#assessment_result_input').html(data);
                     $('#select_assessment_group').hide();
-                   $(':radio:not(:checked)').attr('disabled', true);
+                    $(':radio:not(:checked)').attr('disabled', true);
+                    $('#check-2').show();
                 }
             });
         });

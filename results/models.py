@@ -1,7 +1,10 @@
+import random
+import string
+
 from django.db import models
 
-from users.models import User
 from modules.models import Module, AssessmentGroup, Assessment
+from users.models import User
 
 class YearGrade(models.Model):
     """
@@ -29,14 +32,39 @@ class ModuleResult(models.Model):
     ModuleResult stores the reverse ForeignKeys to the Assessment results
     as well as other data about the Module grade. 
     """
+    slug = models.SlugField(max_length=8, unique=True, blank=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_results')
-    year = models.ForeignKey(YearGrade, on_delete=models.CASCADE, related_name='module_results', null=True)
-    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_results')
-    assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_results')
+    year = models.ForeignKey(YearGrade, on_delete=models.CASCADE, related_name='module_result_years', null=True)
+    module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_result_modules')
+    assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_result_groups')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
 
     def __str__(self):
         return self.module.module_code
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            while True:
+                slug = ''.join(random.choice(string.digits) for _ in range(8))
+                if not ModuleResult.objects.filter(slug=slug).exists():
+                    break
+            self.slug = slug
+
+        super(ModuleResult, self).save(*args, **kwargs)
+
+    def calculate_grade(self):
+        """
+        Calculate the grade the user has achived in this module so far. 
+        """
+        grade = 0
+        module_results = self.assessment_results.all()
+        
+        for result in module_results:
+            if result.result is not None:
+                grade += (result.result * result.assessment.percentage) / 100
+
+        return grade
+
 
 class AssessmentResult(models.Model):
     """
