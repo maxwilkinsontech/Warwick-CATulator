@@ -21,6 +21,9 @@ class YearGrade(models.Model):
     def __str__(self):
         return '[' + str(self.year) + ']' + ' ' + self.user.get_full_name()
 
+    def is_module_result_empty(self):
+        return self.module_result_years.count() == 0
+
 class ModuleResult(models.Model):
     """
     Stores a single ModuleResult entry, related to
@@ -74,9 +77,20 @@ class AssessmentResult(models.Model):
 
     Stores the Users grade for each Assessment of a AssessmentGroup
     """
+    slug = models.SlugField(max_length=8, unique=True, blank=True, editable=False)
     module_result = models.ForeignKey(ModuleResult, on_delete=models.CASCADE, related_name='assessment_results')
     assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_results')
     result = models.DecimalField(max_digits=4, decimal_places=1, null=True)
 
     def __str__(self):
         return self.assessment.assessment_name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            while True:
+                slug = ''.join(random.choice(string.digits) for _ in range(8))
+                if not AssessmentResult.objects.filter(slug=slug).exists():
+                    break
+            self.slug = slug
+
+        super(AssessmentResult, self).save(*args, **kwargs)
