@@ -60,6 +60,12 @@ class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
         return redirect('view_module_result', module_result.slug)
 
 
+class ViewModuleResultExperimental(ModuleResultPermissionMixin, DetailView):
+    """Retrive a ModuleResult and display the experimental mode template"""
+    template_name = 'view_module_result_experimental.html'
+    model = ModuleResult
+
+
 @require_http_methods(['POST'])
 def delete_module_result(request, slug):
     """Delete a given ModuleResult"""

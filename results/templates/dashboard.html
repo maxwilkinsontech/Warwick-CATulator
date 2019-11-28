@@ -10,10 +10,7 @@
 			{% for result in year.module_result_years.all %}
 				<div class="col-md-6 col-lg-4 col-xl-3">
 					<div class="card mt-2">
-						<div class="card-header py-2 px-3">
-							{{ result.module.module_code }}
-							<i style="margin-right: 0;" class="fas fa-ellipsis-v"></i>
-						</div>
+						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
 						<div class="card-body py-2 px-3" style="height: 200px; overflow: hidden;">
 							<h5 class="">{{ result.module.module_name }}</h5>
 							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.calculate_grade|floatformat:1 }}%</h6>
