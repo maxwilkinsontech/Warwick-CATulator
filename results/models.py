@@ -79,7 +79,7 @@ class AssessmentResult(models.Model):
     """
     slug = models.SlugField(max_length=8, unique=True, blank=True, editable=False)
     module_result = models.ForeignKey(ModuleResult, on_delete=models.CASCADE, related_name='assessment_results')
-    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE, related_name='assessment_results')
+    assessment = models.ForeignKey(Assessment, on_delete=models.CASCADE)
     result = models.DecimalField(max_digits=4, decimal_places=1, null=True)
 
     def __str__(self):

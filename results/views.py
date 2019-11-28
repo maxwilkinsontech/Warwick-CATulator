@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.decorators.http import require_http_methods
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template.loader import render_to_string
-from django.views.generic.edit import DeletionMixin
-from django.views.generic import UpdateView, DeleteView
+from django.views.generic.edit import ProcessFormView
+from django.views.generic import DetailView, DeleteView
 from django.urls import reverse_lazy
 
 from .forms import ModuleForm
@@ -21,45 +21,43 @@ def dashboard(request):
     """Display the user's Modules"""
     user = request.user
     years = user.grades.all()
-    # results = user.module_results.all()
 
     context = {
         'years': years
     }
-    # context = {'years': years}
-    # for year in years:
-    #     context[str(year.year)] = results.filter(year=year)
-    #     results.exclude(year=year)
-    # context['unspecified_year'] = results
-
     return render(request, 'dashboard.html', context)
 
 
-class ViewModuleResult(ModuleResultPermissionMixin, UpdateView):
+class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
     """Retrive a ModuleResult and update it on a POST request"""
     template_name = 'view_module_result.html'
     model = ModuleResult
-    success_url = reverse_lazy('dashboard')
-    fields = ['year'] # not used but to prevent exception
 
     def post(self, request, slug):
+        module_result = self.get_object()
         year = request.POST.get('year')
-        get_or_create_year(request.user, year)
+        year_grade = get_or_create_year(request.user, year)
+        module_result.year = year_grade
+        module_result.save()
         
-        for assessment_result_id in request.POST:
-            if assessment_result_id not in ['csrfmiddlewaretoken', 'year']:
-                result = request.POST.get(assessment_result_id, None)
+        assessment_results = module_result.assessment_results.all()
+        for assessment_result_slug in request.POST:
+            if assessment_result_slug not in ['csrfmiddlewaretoken', 'year']:
+                result = request.POST.get(assessment_result_slug, '')
+                # result may be an empty string
+                if result == '':
+                    result = None  
 
                 try:
-                    assessment = AssessmentResult.objects.get(
-                        module_result=module_result,
-                        assessment_id=assessment_result_id
+                    assessment = assessment_results.get(
+                        slug=assessment_result_slug
                     )
                     assessment.result = result
                     assessment.save()
                 except AssessmentResult.DoesNotExist:
                     continue
 
+        return redirect('view_module_result', module_result.slug)
 
 
 @require_http_methods(['POST'])
