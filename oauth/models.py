@@ -9,3 +9,6 @@ class Course(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     course_name = models.CharField(max_length=200)
     course_year_length = models.IntegerField()
+
+    def __str__(self):
+        return '[' + self.course_name + '] ' + self.user.get_full_name()
