@@ -1,6 +1,8 @@
 import random
 import string
 
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.db import models
 
 from modules.models import Module, AssessmentGroup, Assessment
@@ -97,3 +99,13 @@ class AssessmentResult(models.Model):
             self.slug = slug
 
         super(AssessmentResult, self).save(*args, **kwargs)
+
+@receiver(post_save, sender=ModuleResult)
+def add_assessments_after_create(sender, instance, created, **kwargs):
+    if created:
+        assessments = instance.assessment_group.assessments.all()
+        for assessment in assessments:
+            AssessmentResult.objects.create(
+                module_result=instance,
+                assessment_id=assessment.id,
+            )

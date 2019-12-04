@@ -114,11 +114,12 @@ def select_module(request):
                     assessment.result = result
                     assessment.save()
                 except AssessmentResult.DoesNotExist:
-                    assessment = AssessmentResult.objects.create(
-                        module_result=module_result,
-                        assessment_id=assessment_result_id,
-                        result=result
-                    )
+                    # assessment = AssessmentResult.objects.create(
+                    #     module_result=module_result,
+                    #     assessment_id=assessment_result_id,
+                    #     result=result
+                    # )
+                    continue
 
         return redirect('dashboard')
     else:
