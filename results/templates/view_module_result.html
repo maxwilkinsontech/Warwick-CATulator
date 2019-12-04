@@ -6,7 +6,7 @@
 		<h5>
 			Module Grade: {{ object.calculate_grade|floatformat:1 }}%
 		</h5>
-		Potential Grade: xx.x% (<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>)
+		<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>
 	</div>
 	<form method="POST">
 		{% csrf_token %}
