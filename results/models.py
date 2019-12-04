@@ -26,6 +26,18 @@ class YearGrade(models.Model):
     def is_module_result_empty(self):
         return self.module_result_years.count() == 0
 
+    def calculate_grade(self):
+        """Calculate the percentage for this year """
+        total_cats = 0
+        unweighted_grade = 0
+        for module in self.module_result_years.all():
+            total_cats += module.assessment_group.module_cats
+            unweighted_grade += module.assessment_group.module_cats * module.calculate_grade() 
+
+        print(total_cats)
+
+        return unweighted_grade / total_cats
+
 class ModuleResult(models.Model):
     """
     Stores a single ModuleResult entry, related to
