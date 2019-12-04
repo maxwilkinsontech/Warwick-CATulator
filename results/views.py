@@ -19,13 +19,7 @@ def home(request):
 
 def dashboard(request):
     """Display the user's Modules"""
-    user = request.user
-    years = user.grades.all()
-
-    context = {
-        'years': years
-    }
-    return render(request, 'dashboard.html', context)
+    return render(request, 'dashboard.html')
 
 
 class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
@@ -41,10 +35,8 @@ class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
         module_result.save()
         
         assessment_results = module_result.assessment_results.all()
-        print(assessment_results)
         for assessment_result_slug in request.POST:
             if assessment_result_slug not in ['csrfmiddlewaretoken', 'year']:
-                print(assessment_result_slug)
                 result = request.POST.get(assessment_result_slug, '')
                 # result may be an empty string
                 if result == '':
@@ -87,11 +79,18 @@ def select_module(request):
     if request.method == 'POST':
         # use year value from query params if year input left blank
         year_post = request.POST.get('year')
-        year_get = request.GET.get('year')
         year = year_post if year_post != '' else int(year_get)
         year_grade = get_or_create_year(request.user, year)
 
         assessment_group = get_object_or_404(AssessmentGroup, pk=request.POST.get('groups'))
+        # check that the ModuleResult doesn't already exist
+        if ModuleResult.objects.filter(
+            user=request.user,
+            year=year_grade,
+            module=assessment_group.module
+        ).exists():
+            return redirect('dashboard')
+
         module_result, assessment_group_created = ModuleResult.objects.get_or_create(
             user=request.user,
             year=year_grade,
