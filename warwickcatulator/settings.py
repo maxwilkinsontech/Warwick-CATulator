@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'users',
     'modules',
     'results',
-    'oauth',
 ]
 
 MIDDLEWARE = [

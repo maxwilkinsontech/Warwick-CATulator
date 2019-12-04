@@ -1,9 +1,8 @@
 import requests
 
-from .models import Course
-from users.models import User
+from modules.models import Course, Module, AssessmentGroup
 from results.models import ModuleResult, YearGrade
-from modules.models import Module, AssessmentGroup
+from users.models import User
 
 TABULAR_ENDPOINT = 'https://tabula.warwick.ac.uk/api/v1/'
 
