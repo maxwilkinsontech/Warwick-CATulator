@@ -16,7 +16,9 @@ def get_faculties(request_data):
 
     for ultag in soup.findAll('ul', class_='list-unstyled'):
         for litag in ultag.findAll('li'):
-            faculty_modules_link = litag.find('a')['href']
+            faculty_modules_link = litag.find('a').get('href', None)
+            if faculty_modules_link is None:
+                continue
             get_faculty_modules(request_data, faculty_modules_link)
 
 def get_faculty_modules(request_data, link):
@@ -26,9 +28,14 @@ def get_faculty_modules(request_data, link):
 
     for ultag in soup.findAll('ul', class_='list-unstyled'):
         for litag in ultag.findAll('li'):
-            module_link = litag.find('a')['href']
-            get_module_info(request_data, link, module_link)
-            
+            module_link = litag.find('a').get('href', None)
+            if module_link is None:
+                continue
+            try:
+                get_module_info(request_data, link, module_link)
+            except AttributeError:
+                continue
+
 def get_module_info(request_data, link, module_link):
     url = request_data[2] + link + '/' + module_link
     response = requests.get(url)
@@ -85,7 +92,7 @@ def get_module_info(request_data, link, module_link):
                     )
 
 crawlable_links = [
-    ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
+    # ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
     ['18/19', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201819/undergraduate-1819'],
     ['17/18', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201718/undergraduate-1718/undergraduate-copy'],
     ['16/17', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201617/undergraduate-1617/ug_archive_201617'],
@@ -94,5 +101,6 @@ crawlable_links = [
 
 def start():
     print('*** Starting Module Scrape ***')
-    get_faculties(crawlable_links[0])
+    for link in crawlable_links:
+        get_faculties(link)
     print('*** Finished Module Scrape ***')

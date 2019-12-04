@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-	<h3>[{{ object.module.module_code }}] {{ object.module.module_name }}</h3>
+	<h3><a href="{% url 'dashboard' %}"><i class="fas fa-arrow-left"></i></a> [{{ object.module.module_code }}] {{ object.module.module_name }}</h3>
 	<div class="alert alert-primary" role="alert">
 		<h5>
 			Module Grade: {{ object.calculate_grade|floatformat:1 }}%
@@ -28,7 +28,7 @@
 							<td>{{ assessment.assessment.percentage.normalize }}%</td>
 							<td>
 								<div class="input-group">
-									<input type="number" min="0" max="100" step="0.1" name="{{ assessment.assessment.percentage }}" value="{{ assessment.result }}" class="form-control">
+									<input type="number" min="0" max="100" step="0.1" name="{{ assessment.slug }}" value="{{ assessment.result }}" class="form-control">
 									<span class="input-group-append">
 										<span class="input-group-text px-1">%</span>
 									</span>

@@ -42,6 +42,9 @@ class ModuleResult(models.Model):
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_result_groups')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
 
+    class Meta:
+        ordering = ['module']
+
     def __str__(self):
         return self.module.module_code
 

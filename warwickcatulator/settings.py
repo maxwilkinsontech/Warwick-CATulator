@@ -40,11 +40,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
-    'social_django',
-
     'users',
     'modules',
     'results',
+    'oauth',
 ]
 
 MIDDLEWARE = [
