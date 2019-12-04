@@ -35,6 +35,7 @@ class AssessmentGroup(models.Model):
     """
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='assessment_groups')
     assessment_group_name = models.CharField(max_length=200)
+    assessment_group_code = models.CharField(max_length=5)
     module_cats = models.DecimalField(max_digits=4, decimal_places=1)
 
     def __str__(self):

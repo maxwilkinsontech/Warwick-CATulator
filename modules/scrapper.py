@@ -81,6 +81,7 @@ def get_module_info(request_data, link, module_link):
                 assessment_group = AssessmentGroup.objects.create(
                     module=module,
                     assessment_group_name=key,
+                    assessment_group_code=key.split(' ', 1)[0],
                     module_cats=value[0][0]
                 )
 
@@ -92,7 +93,7 @@ def get_module_info(request_data, link, module_link):
                     )
 
 crawlable_links = [
-    # ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
+    ['19/20', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'],
     ['18/19', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201819/undergraduate-1819'],
     ['17/18', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201718/undergraduate-1718/undergraduate-copy'],
     ['16/17', 'Undergraduate', 'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201617/undergraduate-1617/ug_archive_201617'],
@@ -101,6 +102,7 @@ crawlable_links = [
 
 def start():
     print('*** Starting Module Scrape ***')
-    for link in crawlable_links:
-        get_faculties(link)
+    # for link in crawlable_links:
+    #     get_faculties(link)
+    get_faculties(crawlable_links[0])
     print('*** Finished Module Scrape ***')
