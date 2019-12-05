@@ -17,7 +17,7 @@
                                 {% if forloop.counter == 1 %}
                                     <label for="{{ group.id }}">
                                     <input type="radio" id="{{ group.id }}" value="{{ group.id }}" name="groups" {% if forloop.parentloop.counter == 1 %}checked{% endif %}>
-                                    {{ group.assessment_group_name }} [{{ group.module_cats.normalize }} CATS]
+                                    {{ group.assessment_group_code }} [{{ group.module_cats.normalize }} CATS]
                                     </label>
                                 {% endif %}
                             </td>

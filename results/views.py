@@ -42,14 +42,13 @@ class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
                 if result == '':
                     result = None  
 
-                try:
-                    assessment = assessment_results.get(
-                        slug=assessment_result_slug
-                    )
-                    assessment.result = result
-                    assessment.save()
-                except AssessmentResult.DoesNotExist:
+                assessment = assessment_results.filter(slug=assessment_result_slug).first()
+                
+                if assessment is None:
                     continue
+
+                assessment.result = result
+                assessment.save()
 
         return redirect('view_module_result', module_result.slug)
 
@@ -106,20 +105,16 @@ def select_module(request):
                 if result == '':
                     result = None
 
-                try:
-                    assessment = AssessmentResult.objects.get(
-                        module_result=module_result,
-                        assessment_id=assessment_result_id
-                    )
-                    assessment.result = result
-                    assessment.save()
-                except AssessmentResult.DoesNotExist:
-                    # assessment = AssessmentResult.objects.create(
-                    #     module_result=module_result,
-                    #     assessment_id=assessment_result_id,
-                    #     result=result
-                    # )
+                assessment = AssessmentResult.objects.filter(
+                    module_result=module_result,
+                    assessment_id=assessment_result_id
+                ).first()
+
+                if assessment is None:
                     continue
+                
+                assessment.result = result
+                assessment.save()
 
         return redirect('dashboard')
     else:
@@ -144,7 +139,7 @@ def get_assessment_group(request):
 def get_assessments(request):
     """Return a table with the Assessments for the given AssessmentGroup"""
     assessment_group_id = request.GET.get('assessment_group_id')
-    assessment_group = AssessmentGroup.objects.get(pk=assessment_group_id)
+    assessment_group = get_object_or_404(AssessmentGroup, pk=assessment_group_id)
 
     context = {'assessments': assessment_group.assessments.all()}
     html = render_to_string('get_assessments.html', context)

@@ -16,7 +16,7 @@ def retreive_member_infomation(user):
     user.email = data['email']
     user.save()
     # save user's course info
-    # save_course_infomation(user, data)
+    save_course_infomation(user, data)
 
 def save_course_infomation(user, data):
     """

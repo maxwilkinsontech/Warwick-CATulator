@@ -5,26 +5,26 @@ from .oauth import obtain_request_token, exchange_access_token
 
 
 def logout_view(request):
+    """
+    Logout the current user.
+    """
     logout(request)
     return redirect('home')
 
 
 def login_view(request):
     """
-    This is going to get a token from the Warwick oauth site.
-
-    On first login is going to setup data.
-    On subsequent, is going to send to dashboard.
+    This is going to get a token from the Warwick oauth site and
+    redirect the user to authorize this site.
     """
     url = obtain_request_token()
-    print(url)
     return redirect(url)
 
 
 def get_access_token(request):
     """
-    Use the request token in the url params to get a valid access
-    token.
+    Use the request token from the url params to get a valid access
+    token. Then login the user (creating an account if needed).
     """
     oauth_token = request.GET.get('oauth_token')
     user_id = request.GET.get('user_id', 'u1234567')[1:]

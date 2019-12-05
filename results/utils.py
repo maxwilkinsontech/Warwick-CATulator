@@ -1,4 +1,5 @@
-from .models import YearGrade
+from .models import YearGrade, AssessmentResult
+
 
 def get_or_create_year(user, year):
     year_grade = None
@@ -8,3 +9,4 @@ def get_or_create_year(user, year):
             year=year
         )
     return year_grade
+        

@@ -4,7 +4,7 @@ oauth API
 """
 import urllib.parse
 
-from oauthlib.oauth1 import SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER, Client
+from oauthlib.oauth1 import SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER
 from requests_oauthlib import OAuth1Session
 
 from .utils import CONSUMER_KEY, CONSUMER_SECRET, CustomClient
