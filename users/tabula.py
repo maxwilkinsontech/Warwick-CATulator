@@ -4,49 +4,31 @@ from modules.models import Course, Module, AssessmentGroup
 from results.models import ModuleResult, YearGrade
 from users.models import User
 
-TABULAR_ENDPOINT = 'https://tabula.warwick.ac.uk/api/v1/'
+TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
 
-def retreive_member_infomation(university_id=1801383):
-    url = TABULAR_ENDPOINT + 'member/' + str(university_id)
-    request_headers = {
-        'Authorization': 'Basic MTgwMTM4MzpIb2NrZXkxMldpbGtpbnNvbjM1d2Fyd2ljaw=='
-    }
+def retreive_member_infomation(user):
+    oauth = user.get_oauth_session()
+    response = oauth.request("GET", TABULAR_URL)
+    data = response.json()['member']
+    # save basic user info
+    user.first_name = data['firstName']
+    user.last_name = data['lastName']
+    user.email = data['email']
+    user.save()
+    # save user's course info
+    # save_course_infomation(user, data)
 
-    response = requests.get(url, headers=request_headers)
-    json_response = response.json()['member']
-
-    user = save_student_infomation(json_response)
-    save_course(user, json_response)
-
-def save_student_infomation(data):
-    """
-    Store infomation about the student
-    """
-    first_name = data['firstName']
-    last_name = data['lastName']
-    email = data['email']
-
-    # user = User.objects.create_user(
-    #     first_name=first_name,
-    #     last_name=last_name,
-    #     email=email
-    # )
-    user = User.objects.get(email='admin@admin.com')
-    user.set_password('superuser')
-
-    return user
-
-def save_course(user, data):
+def save_course_infomation(user, data):
     """
     Retrive infomation about the student's course.
-    May be more than 1 course. Active course marked with mostSignificant=true
+    May be more than 1 course. Active course marked with 
+    mostSignificant=true
     """
     courses = data['studentCourseDetails']
-
     course = courses[0]
     if len(courses) > 1:
         for poss_course in courses:
-            if course['mostSignificant'] == True:
+            if course['mostSignificant']:
                 course = poss_course 
                 break
 
@@ -84,34 +66,24 @@ def save_modules(user, years, modules):
     """
     for module in modules:
         module_code = module['module']['code']
-        module_name = module['module']['name']
         academic_year = module['academicYear']
         assessment_group = module['assessmentGroup']
-
-        # get the module from the database
-        try:
-            module_info = Module.objects.get(
-                module_code=module_code.upper()
-                # academic_year=academic_year
-            )
-        except Module.DoesNotExist:
-            print('Module ' + str(module_code) + ' does not exist')
+        # get the Module from the database
+        # academic_year=academic_year
+        module_info = Module.objects.filter(module_code=module_code.upper()).order_by('id').first()
+        if module_info is None:
+            print('Module ' + str(module_code) + ' does not exist')            
             continue
-
         # get the assessment group from the database
         assessment_groups = module_info.assessment_groups.all()
-        try:
-            assessment_group = assessment_groups.get(
-                assessment_group_code=assessment_group
-            )
-        except AssessmentGroup.DoesNotExist:
+        assessment_group = assessment_groups.filter(assessment_group_code=assessment_group).order_by('id').first()
+        if assessment_group is None:
             if assessment_groups.count() == 1:
                 assessment_group = assessment_groups.first()
             else:
                 print('Module ' + str(module_code) + ' assessment group does not exist')
-                continue
-
-        # create the ModuleResult for the student
+                continue       
+        # create the ModuleResult for the module
         module_object = ModuleResult.objects.create(
             user=user,
             year=years[academic_year],
@@ -119,5 +91,3 @@ def save_modules(user, years, modules):
             assessment_group=assessment_group,
             academic_year=academic_year
         )
-
-# retreive_member_infomation()

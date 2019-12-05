@@ -2,45 +2,75 @@
 Methods that are used to authenticate the user with the Warwick
 oauth API
 """
-import json
-import requests
+import urllib.parse
 
-from requests_oauthlib import OAuth1
-from urllib.parse import parse_qs
-from django.http import HttpResponse
+from oauthlib.oauth1 import SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER, Client
+from requests_oauthlib import OAuth1Session
 
-client_key = 'warwickcatulator.co.uk'
-client_secret = 'TGVhdmUgdGhlIGtleSB0eXBlIyZXQu'
+from .utils import CONSUMER_KEY, CONSUMER_SECRET, CustomClient
+from .models import User, RequestTokenStore
+from .tabula import retreive_member_infomation
 
-def obtain_request_token():
+
+ACCESS_TOKEN_URL = "https://websignon.warwick.ac.uk/oauth/accessToken"
+AUTHORISE_URL = "https://websignon.warwick.ac.uk/oauth/authorise?"
+REQUEST_TOKEN_URL = "https://websignon.warwick.ac.uk/oauth/requestToken?"
+
+SCOPES = "urn:websignon.warwick.ac.uk:sso:service urn:tabula.warwick.ac.uk:tabula:service"
+
+
+def obtain_request_token(callback='http://127.0.0.1:8000/callback/', expiry='forever'):
     """
-    This method obtains a request token by sending a signed request.
+    This method obtains a request token by sending a signed request and returns 
+    a url to redirect the user to authorize the token.
     """
-    request_token_url = 'https://websignon.warwick.ac.uk/oauth/requestToken'
-    body = {'scope': 'urn:websignon.warwick.ac.uk:sso:service'}
-    # obtain request token
-    oauth = OAuth1(client_key, client_secret=client_secret)
-    response = requests.post(url=request_token_url, auth=oauth, data=body)
-    credentials = parse_qs(response.content.decode('utf-8'))
-    resource_owner_key = credentials.get('oauth_token')[0]
-    resource_owner_secret = credentials.get('oauth_token_secret')[0]
-    # authorize the request token
-    request_token_auth_url = ('https://websignon.warwick.ac.uk/oauth/authorise'
-                              '?oauth_token=' + resource_owner_key + 
-                              '&oauth_callback=http://127.0.0.1:8000/get-access-token/'
-                             )
+    oauth = OAuth1Session(
+        CONSUMER_KEY, 
+        client_secret=CONSUMER_SECRET,
+        signature_method=SIGNATURE_HMAC,
+        signature_type=SIGNATURE_TYPE_AUTH_HEADER, 
+        client_class=CustomClient,
+        callback_uri=callback
+    )
+    response = oauth.fetch_request_token(
+        url=REQUEST_TOKEN_URL + urllib.parse.urlencode({'scope': SCOPES, 'expiry': expiry}))
+    # store the oauth_token_secret for later use when getting access token
+    RequestTokenStore.objects.create(
+        oauth_token=response['oauth_token'],
+        oauth_token_secret=response['oauth_token_secret']
+    )
 
-    return request_token_auth_url
+    authorise_qs = urllib.parse.urlencode({'oauth_token': response['oauth_token']})
+    return AUTHORISE_URL + authorise_qs
 
-def exchange_access_token(oauth_token, user_id):
+
+def exchange_access_token(oauth_token, returned_url, user_id):
     """
     This method gets an access token using an authorized request token.
     """
-    request_token_url = 'https://websignon.warwick.ac.uk/oauth/accessToken'
-    oauth = OAuth1(client_key, client_secret=client_secret, resource_owner_key=oauth_token)
-    response = requests.post(url=request_token_url, auth=oauth)
+    aouth_secret = RequestTokenStore.get_secret(oauth_token)
+    oauth = OAuth1Session(
+        CONSUMER_KEY,
+        CONSUMER_SECRET,
+        resource_owner_secret=aouth_secret, 
+        client_class=CustomClient
+    )
+    # TODO: process error
+    oauth.parse_authorization_response(returned_url)
+    access_tokens = oauth.fetch_access_token(ACCESS_TOKEN_URL)
+    # get or create user
+    user = User.objects.filter(user_id=user_id).first()
+    if user is None:
+        user = User.objects.create(
+            email=user_id+'@email.com',
+            user_id=user_id,
+            access_token=access_tokens['oauth_token'],
+            access_token_secret=access_tokens['oauth_token_secret']
+        )
+        retreive_member_infomation(user)
+    else:
+        user.access_token = access_tokens['oauth_token']
+        user.access_token_secret = access_tokens['oauth_token_secret']
+        user.save()
 
-
-    print(response.status_code)
-    print(response.reason)
-    print(response.content)
+    return user
