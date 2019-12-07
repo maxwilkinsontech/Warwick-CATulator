@@ -12,7 +12,6 @@ from .utils import CustomClient
 from .models import User, RequestTokenStore
 from .tabula import retreive_member_infomation
 
-
 ACCESS_TOKEN_URL = "https://websignon.warwick.ac.uk/oauth/accessToken"
 AUTHORISE_URL = "https://websignon.warwick.ac.uk/oauth/authorise?"
 REQUEST_TOKEN_URL = "https://websignon.warwick.ac.uk/oauth/requestToken?"
@@ -21,8 +20,8 @@ SCOPES = "urn:websignon.warwick.ac.uk:sso:service urn:tabula.warwick.ac.uk:tabul
 
 def obtain_request_token(callback='http://127.0.0.1:8000/callback/', expiry='forever'):
     """
-    This method obtains a request token by sending a signed request and returns 
-    a url to redirect the user to authorize the token.
+    This method obtains a request token by sending a signed request. Returns 
+    a url to redirect the user in order to authorize the token.
     """
     oauth = OAuth1Session(
         settings.CONSUMER_KEY, 
@@ -47,12 +46,14 @@ def obtain_request_token(callback='http://127.0.0.1:8000/callback/', expiry='for
 
 def exchange_access_token(oauth_token, returned_url, user_id):
     """
-    This method gets an access token using an authorized request token.
+    This method gets an access token using an authorized request token. It then
+    either retrive an exisiting user with the given user_id or create a new user.
+    If a new User is created, their module info is populated. Returns the user.
     """
     aouth_secret = RequestTokenStore.get_secret(oauth_token)
     oauth = OAuth1Session(
-        CONSUMER_KEY,
-        CONSUMER_SECRET,
+        settings.CONSUMER_KEY,
+        settings.CONSUMER_SECRET,
         resource_owner_secret=aouth_secret, 
         client_class=CustomClient
     )

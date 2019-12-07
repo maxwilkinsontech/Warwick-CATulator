@@ -11,23 +11,24 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-
 def login_view(request):
     """
-    This is going to get a token from the Warwick oauth site and
-    redirect the user to authorize this site.
+    Redirect the user to authorize the request token via logging in to their 
+    Warwick ITS account. They will be directed back to the callback argument.
     """
-    url = obtain_request_token(callback='http://178.62.83.252:8000/callback/')
+    # Uncomment when not running locally.
+    # url = obtain_request_token(callback='http://178.62.83.252:8000/callback/')
+    url = obtain_request_token()
     return redirect(url)
-
 
 def get_access_token(request):
     """
-    Use the request token from the url params to get a valid access
-    token. Then login the user (creating an account if needed).
+    Use the request token from the url params to get a valid access token. Then 
+    login the user (creating an account if needed) and redirect to their 
+    dashboard.
     """
     oauth_token = request.GET.get('oauth_token')
-    user_id = request.GET.get('user_id', 'u1234567')[1:]
+    user_id = request.GET.get('user_id', 'u1234567')[1:] # remove 'u' prefix
     url = request.build_absolute_uri()
 
     user = exchange_access_token(oauth_token, url, user_id)

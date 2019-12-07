@@ -7,6 +7,10 @@ from users.models import User
 TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
 
 def retreive_member_infomation(user):
+    """
+    This method is used to populate the user's profile with infomation from 
+    Tabula.
+    """
     oauth = user.get_oauth_session()
     response = oauth.request("GET", TABULAR_URL)
     data = response.json()['member']
@@ -21,7 +25,7 @@ def retreive_member_infomation(user):
 def save_course_infomation(user, data):
     """
     Retrive infomation about the student's course. May be more than 1 course. 
-    Active course marked with mostSignificant=true
+    Get user's active course: marked with mostSignificant=true.
     """
     courses = data['studentCourseDetails']
     course = courses[0]
@@ -45,29 +49,39 @@ def save_course_infomation(user, data):
 
 def save_modules(user, years, modules):
     """
-    Create the appropriate models for the modules the student is taking
+    Create the appropriate models for the modules the student is taking.
     """
     for module in modules:
         module_code = module['module']['code']
         academic_year = module['academicYear']
         assessment_group = module['assessmentGroup']
-        # get the Module from the database
-        # academic_year=academic_year
-        module_info = Module.objects.filter(module_code=module_code.upper()).order_by('id').first()
+        # TODO: add academic_year=academic_year
+        module_info = (
+            Module
+            .objects
+            .filter(module_code=module_code.upper())
+            .order_by('id')
+            .first()
+        )
         if module_info is None:
             print('Module ' + str(module_code) + ' does not exist')            
             continue
-        # get the assessment group from the database
+
         assessment_groups = module_info.assessment_groups.all()
-        assessment_group = assessment_groups.filter(assessment_group_code=assessment_group).order_by('id').first()
+        assessment_group = (
+            assessment_groups
+            .filter(assessment_group_code=assessment_group)
+            .order_by('id')
+            .first()
+        )
         if assessment_group is None:
             if assessment_groups.count() == 1:
                 assessment_group = assessment_groups.first()
             else:
                 print('Module ' + str(module_code) + ' assessment group does not exist')
                 continue       
-        # create the ModuleResult for the module
-        module_object = ModuleResult.objects.create(
+
+        ModuleResult.objects.create(
             user=user,
             year=years[academic_year],
             module=module_info,
