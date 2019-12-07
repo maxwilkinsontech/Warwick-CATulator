@@ -20,9 +20,8 @@ def retreive_member_infomation(user):
 
 def save_course_infomation(user, data):
     """
-    Retrive infomation about the student's course.
-    May be more than 1 course. Active course marked with 
-    mostSignificant=true
+    Retrive infomation about the student's course. May be more than 1 course. 
+    Active course marked with mostSignificant=true
     """
     courses = data['studentCourseDetails']
     course = courses[0]
@@ -43,22 +42,6 @@ def save_course_infomation(user, data):
 
     years = get_years(user, course['studentCourseYearDetails'])
     save_modules(user, years, course['moduleRegistrations'])
-
-def get_years(user, years):
-    """
-    Return a dict with the academic year and corrosponding year of the
-    user's course.
-    """
-    years_dict = {}
-
-    for year in years:
-        year_grade, created = YearGrade.objects.get_or_create(
-            user=user,
-            year=year['yearOfStudy']
-        )
-        years_dict[year['academicYear']] = year_grade
-
-    return years_dict
 
 def save_modules(user, years, modules):
     """
@@ -91,3 +74,19 @@ def save_modules(user, years, modules):
             assessment_group=assessment_group,
             academic_year=academic_year
         )
+
+def get_years(user, years):
+    """
+    Return a dict with the academic year and corrosponding YearGrade of the 
+    user's course.
+    """
+    years_dict = {}
+
+    for year in years:
+        year_grade, created = YearGrade.objects.get_or_create(
+            user=user,
+            year=year['yearOfStudy']
+        )
+        years_dict[year['academicYear']] = year_grade
+
+    return years_dict

@@ -6,8 +6,9 @@ import urllib.parse
 
 from oauthlib.oauth1 import SIGNATURE_HMAC, SIGNATURE_TYPE_AUTH_HEADER
 from requests_oauthlib import OAuth1Session
+from django.conf import settings
 
-from .utils import CONSUMER_KEY, CONSUMER_SECRET, CustomClient
+from .utils import CustomClient
 from .models import User, RequestTokenStore
 from .tabula import retreive_member_infomation
 
@@ -24,15 +25,16 @@ def obtain_request_token(callback='http://127.0.0.1:8000/callback/', expiry='for
     a url to redirect the user to authorize the token.
     """
     oauth = OAuth1Session(
-        CONSUMER_KEY, 
-        client_secret=CONSUMER_SECRET,
+        settings.CONSUMER_KEY, 
+        client_secret=settings.CONSUMER_SECRET,
         signature_method=SIGNATURE_HMAC,
         signature_type=SIGNATURE_TYPE_AUTH_HEADER, 
         client_class=CustomClient,
         callback_uri=callback
     )
     response = oauth.fetch_request_token(
-        url=REQUEST_TOKEN_URL + urllib.parse.urlencode({'scope': SCOPES, 'expiry': expiry}))
+        url=REQUEST_TOKEN_URL + urllib.parse.urlencode({'scope': SCOPES, 'expiry': expiry})
+    )
     # store the oauth_token_secret for later use when getting access token
     RequestTokenStore.objects.create(
         oauth_token=response['oauth_token'],
@@ -54,12 +56,12 @@ def exchange_access_token(oauth_token, returned_url, user_id):
         resource_owner_secret=aouth_secret, 
         client_class=CustomClient
     )
-    # TODO: process error
     oauth.parse_authorization_response(returned_url)
     access_tokens = oauth.fetch_access_token(ACCESS_TOKEN_URL)
-    # get or create user
+
     user = User.objects.filter(user_id=user_id).first()
     if user is None:
+        # email will be set to their actual email in retreive_member_infomation()
         user = User.objects.create(
             email=user_id+'@email.com',
             user_id=user_id,
