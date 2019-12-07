@@ -18,7 +18,6 @@ REQUEST_TOKEN_URL = "https://websignon.warwick.ac.uk/oauth/requestToken?"
 
 SCOPES = "urn:websignon.warwick.ac.uk:sso:service urn:tabula.warwick.ac.uk:tabula:service"
 
-
 def obtain_request_token(callback='http://127.0.0.1:8000/callback/', expiry='forever'):
     """
     This method obtains a request token by sending a signed request and returns 

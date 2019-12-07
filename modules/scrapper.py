@@ -8,6 +8,16 @@ import time
 from bs4 import BeautifulSoup
 
 from .models import Module, AssessmentGroup, Assessment
+from users.models import User
+
+MODULES_URL = 'https://tabula.warwick.ac.uk/api/v1/module'
+
+
+def count_modules():
+    user = User.objects.get(email="Max.Wilkinson@warwick.ac.uk")
+    oauth = user.get_oauth_session()
+    response = oauth.request("GET", MODULES_URL)
+    print(len([x for x in response.json()['modules'] if x['active']]))
 
 def get_faculties(request_data):
     """Get all the factulties for the undergraduate."""
@@ -16,7 +26,7 @@ def get_faculties(request_data):
 
     for ultag in soup.findAll('ul', class_='list-unstyled'):
         for litag in ultag.findAll('li'):
-            faculty_modules_link = litag.find('a').get('href', None)
+            faculty_modules_link = litag.find('a', {}).get('href', None)
             if faculty_modules_link is None:
                 continue
             get_faculty_modules(request_data, faculty_modules_link)

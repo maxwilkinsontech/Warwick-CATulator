@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Module, AssessmentGroup, Assessment
+from .models import Module, AssessmentGroup, Assessment, Course
 
 class AssessmentInline(admin.TabularInline):
     model = Assessment
@@ -23,3 +23,4 @@ class ModuleAdmin(admin.ModelAdmin):
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(AssessmentGroup, AssessmentGroupAdmin)
 admin.site.register(Assessment)
+admin.site.register(Course)

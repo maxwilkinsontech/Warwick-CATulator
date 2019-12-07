@@ -31,7 +31,6 @@ class Module(models.Model):
         ('15/16', '15/16'),
     )
 
-    level = models.CharField(max_length=15)
     academic_year = models.CharField(max_length=5, choices=ACADEMIC_YEARS, default='19/20')
     faculty = models.CharField(max_length=100)
     module_code = models.CharField(max_length=10)
