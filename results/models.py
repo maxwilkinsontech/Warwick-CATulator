@@ -13,9 +13,8 @@ class YearGrade(models.Model):
     Stores a single Year entry, related to
     :model:'user.User'
 
-    A YearGrade is comprised of several Modules. The weighted sum of the 
-    Module marks is calculated to determine the classification of 
-    the year for the student.
+    A YearGrade is comprised of several Modules. The weighted sum of the Module
+    marks is calculated to determine the classification of the year.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grades')
     year = models.PositiveSmallIntegerField()
@@ -61,6 +60,9 @@ class ModuleResult(models.Model):
         return self.module.module_code
 
     def save(self, *args, **kwargs):
+        """
+        Generate a random 8 digit slug as this is visable in the url.
+        """
         if not self.slug:
             while True:
                 slug = ''.join(random.choice(string.digits) for _ in range(8))
@@ -111,7 +113,7 @@ class AssessmentResult(models.Model):
         super(AssessmentResult, self).save(*args, **kwargs)
 
 @receiver(post_save, sender=ModuleResult)
-def add_assessments_after_create(sender, instance, created, **kwargs):
+def add_assessments_after_created(sender, instance, created, **kwargs):
     if created:
         assessments = instance.assessment_group.assessments.all()
         for assessment in assessments:

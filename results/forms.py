@@ -2,6 +2,7 @@ from django import forms
 
 from modules.models import Module
 
+
 class ModuleForm(forms.ModelForm):
     """Form for user to select the Module"""
     module_code = forms.ModelChoiceField(queryset=Module.objects.all())

@@ -1,7 +1,7 @@
 from django.urls import path, include
 
-from . views import a
+from . views import start_module_scrape
 
 urlpatterns = [
-    path('', a),
+    path('', start_module_scrape),
 ]

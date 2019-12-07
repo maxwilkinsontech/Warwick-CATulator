@@ -16,11 +16,9 @@ from modules.models import Module, AssessmentGroup
 def home(request):
     return render(request, 'index.html')
 
-
 def dashboard(request):
     """Display the user's Modules"""
     return render(request, 'dashboard.html')
-
 
 class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
     """Retrive a ModuleResult and update it on a POST request"""
@@ -72,7 +70,6 @@ def delete_module_result(request, slug):
 
         return redirect('dashboard')  
 
-
 def select_module(request):
     """Return page on GET and save Assessment results on POST"""
     if request.method == 'POST':
@@ -122,7 +119,6 @@ def select_module(request):
     
     return render(request, 'select_module.html', {'form': form})
 
-
 def get_assessment_group(request):
     """Return a table (in html) of the AssessmentGroups for a given module
     and acadmic year"""
@@ -134,7 +130,6 @@ def get_assessment_group(request):
     context = {'assessment_groups': module.assessment_groups.all()}
     html = render_to_string('get_assessment_group.html', context)
     return HttpResponse(html)
-
 
 def get_assessments(request):
     """Return a table with the Assessments for the given AssessmentGroup"""

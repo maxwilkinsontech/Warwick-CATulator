@@ -1,5 +1,6 @@
 from django.core.exceptions import PermissionDenied
 
+
 class ModuleResultPermissionMixin(object):
 
     def get_object(self, *args, **kwargs):

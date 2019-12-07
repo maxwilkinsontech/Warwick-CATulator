@@ -64,9 +64,8 @@ class Assessment(models.Model):
     Stores a single Assessment entry, related to
     :model:'modules.AssessmentGroup'
 
-    An Assessment is one of the ways a Module is graded upon. Each Module
-    can have different AssessmentGroups which in turn can have different
-    Assessments.
+    An Assessment is one of the ways a Module is graded upon. Each Module can 
+    have different AssessmentGroups which in turn can have different Assessments.
     """
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='assessments')
     assessment_name = models.CharField(max_length=200)
