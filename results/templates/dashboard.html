@@ -18,7 +18,7 @@
 							<p class="card-text">
 								<ul style="padding: 0; list-style-type: none;">
 									{% for assessment in result.assessment_results.all %}
-										<li>{{ assessment }}</li>
+										<li><b>- </b>{{ assessment }} <div class="text-muted" style="display:inline;">[{{ assessment.assessment.percentage }}%]</div></li>
 									{% endfor %}
 								</ul>
 							</p>
