@@ -33,7 +33,7 @@ class Module(models.Model):
 
     academic_year = models.CharField(max_length=5, choices=ACADEMIC_YEARS, default='19/20')
     faculty = models.CharField(max_length=100)
-    module_code = models.CharField(max_length=10)
+    module_code = models.CharField(max_length=50)
     module_name = models.CharField(max_length=200)
 
     def __str__(self):
@@ -70,7 +70,16 @@ class Assessment(models.Model):
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='assessments')
     assessment_name = models.CharField(max_length=200)
     percentage = models.DecimalField(max_digits=4, decimal_places=1)
-    uses_worst_result = models.BooleanField(default=False)
+    # uses_worst_result = models.BooleanField(default=False)
 
     def __str__(self):
         return self.assessment_name
+
+class UndefinedModule(models.Model):
+    """
+    This model is for modules that dont have a Module item. It will be used for 
+    telling me what modules need creating.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    module_code = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)

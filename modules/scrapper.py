@@ -19,6 +19,101 @@ def count_modules():
     response = oauth.request("GET", MODULES_URL)
     print(len([x for x in response.json()['modules'] if x['active']]))
 
+
+def get_modules():
+    """
+    Get all modules from Tabula.
+    """
+    user = User.objects.get(email="Max.Wilkinson@warwick.ac.uk")
+    oauth = user.get_oauth_session()
+    response = oauth.request("GET", MODULES_URL)
+    modules = response.json()['modules']
+
+    unfound_module = []
+
+    for module in modules:
+        returned_module_code = save_module(module)
+        if returned_module_code is not None:
+            unfound_module.append(returned_module_code)
+
+    print(*unfound_module)
+    print(len(unfound_module))
+
+def save_module(module):
+    """
+    Given a module json object, get its data and save it to the database.
+    """
+    module_name = module['name']
+    module_code = module['code']
+    department_name = module['adminDepartment']['name']
+    department_code = module['adminDepartment']['code']
+
+    url = (
+        'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'
+        + department_code
+        + '/'
+        + module_code
+    )
+
+    response = requests.get(url)
+    if response.status_code == 404:
+        print(module_code)
+        return module_code
+        
+    soup = BeautifulSoup(response.text, 'html.parser')
+
+    if not Module.objects.filter(module_code=module_code).exists():
+        # Get the assessment infomation for the module
+        assessment_groups_table = soup.find('table', class_='table table-striped').findAll('tbody')
+        
+        if assessment_groups_table is None:
+            print(module_code)
+            return module_code
+
+        module = Module.objects.create(
+            faculty=department_name,
+            module_code=module_code,
+            module_name=module_name,
+        )
+
+        for body in assessment_groups_table:
+            assessment_groups = body.findAll('tr')
+            # create a dictionary, key is the name of the AssessmentGroup and value
+            # is a list of Assessments
+            assessment_groups_dict = {}
+            prev_assessment_name = None
+            for row in assessment_groups[1:]:
+                cols = row.findAll('td')
+                assessment_name = cols[0].text.strip()
+
+                try: 
+                    if len(assessment_name) > 1:
+                        cats = assessment_groups[0].find('th').text.split(' ')[0]
+                        assessment_groups_dict[assessment_name] = [[cats, cols[1].text, cols[2].text]]
+                        prev_assessment_name = assessment_name
+                    else:
+                        assessment_groups_dict.get(prev_assessment_name, []).append([None, cols[1].text, cols[2].text])
+                except IndexError:
+                    module.delete()
+                    print(module_code)
+                    return module_code
+
+            for key, value in assessment_groups_dict.items():
+                assessment_group = AssessmentGroup.objects.create(
+                    module=module,
+                    assessment_group_name=key,
+                    assessment_group_code=key.split(' ', 1)[0],
+                    module_cats=value[0][0]
+                )
+
+                for assessment in value:
+                    Assessment.objects.create(
+                        assessment_group=assessment_group,
+                        assessment_name=assessment[1],
+                        percentage=float(assessment[2].strip('%'))
+                    )
+    return
+
 def get_faculties(request_data):
     """Get all the factulties for the undergraduate."""
     response = requests.get(request_data[2])
@@ -60,9 +155,7 @@ def get_module_info(request_data, link, module_link):
     if not Module.objects.filter(module_code=module_code).exists():
 
         module = Module.objects.create(
-            level=request_data[1],
             academic_year=request_data[0],
-            faculty=module_faculty,
             module_code=module_code,
             module_name=module_name,
         )

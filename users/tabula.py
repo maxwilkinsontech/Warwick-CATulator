@@ -67,6 +67,7 @@ def save_modules(user, years, modules):
             print('Module ' + str(module_code) + ' does not exist')            
             continue
 
+        # TODO: FILTER BY CATS TOO
         assessment_groups = module_info.assessment_groups.all()
         assessment_group = (
             assessment_groups
