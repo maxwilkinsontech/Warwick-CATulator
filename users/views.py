@@ -1,15 +1,18 @@
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
 
 from .oauth import obtain_request_token, exchange_access_token
 
 
+@login_required
 def logout_view(request):
     """
     Logout the current user.
     """
     logout(request)
     return redirect('home')
+
 
 def login_view(request):
     """
@@ -20,6 +23,7 @@ def login_view(request):
     # url = obtain_request_token(callback='http://178.62.83.252:8000/callback/')
     url = obtain_request_token()
     return redirect(url)
+
 
 def get_access_token(request):
     """
@@ -35,3 +39,17 @@ def get_access_token(request):
     login(request, user)
     
     return redirect('dashboard')
+
+
+@login_required
+def unknown_modules_warnings(request):
+    """
+    After a user is logged in, they are redirected to this view before they are
+    send to their dashboard. It will show them if there are any modules that 
+    haven't been added to their profile as they haven't been scraped yet.
+    """
+    unknown_modules = request.user.unknown_modules.all()
+    if not unknown_modules.exists():
+        return redirect('dashboard')
+    
+    return render(request, 'unknown_modules.html', {'modules': unknown_modules})

@@ -81,7 +81,7 @@ class UndefinedModule(models.Model):
     This model is for modules that dont have a Module item. It will be used for 
     telling me what modules need creating.
     """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='unknown_modules')
     year = models.IntegerField()
     module_code = models.CharField(max_length=50)
     assessment_group_code = models.CharField(max_length=50)
