@@ -47,8 +47,21 @@ def save_course_infomation(user, data):
         course_year_length=course_year_length
     )
 
+    courses = course['moduleRegistrations']
+    courses.append(
+        {'academicYear': '19/20',
+        'assessmentGroup': 'X',
+        'cats': 15.0,
+        'module': {'adminDepartment': {'code': 'cs', 'name': 'DCS'},
+                    'code': 'XXXXX',
+                    'name': 'XXXXX'},
+        'occurrence': 'A',
+        'status': 'Core'},
+    )
+
     years = get_years(user, course['studentCourseYearDetails'])
-    save_modules(user, years, course['moduleRegistrations'])
+    # save_modules(user, years, course['moduleRegistrations'])
+    save_modules(user, years, courses)
 
 def save_modules(user, years, modules):
     """
@@ -58,7 +71,7 @@ def save_modules(user, years, modules):
         module_code = module['module']['code']
         academic_year = module['academicYear']
         assessment_group = module['assessmentGroup']
-        # TODO: add academic_year=academic_year
+        
         module_info = (
             Module
             .objects
@@ -69,13 +82,12 @@ def save_modules(user, years, modules):
         if module_info is None:
             UndefinedModule.objects.create(
                 user=user,
-                year=years[academic_year],
+                year=years[academic_year].year,
                 module_code=module_code,
                 assessment_group_code=assessment_group,
                 academic_year=academic_year
             )      
             continue
-
         # TODO: FILTER BY CATS TOO
         assessment_groups = module_info.assessment_groups.all()
         assessment_group = (
@@ -90,7 +102,7 @@ def save_modules(user, years, modules):
             else:
                 UndefinedModule.objects.create(
                     user=user,
-                    year=years[academic_year],
+                    year=years[academic_year].year,
                     module_code=module_code,
                     assessment_group_code=assessment_group,
                     academic_year=academic_year

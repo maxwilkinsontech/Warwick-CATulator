@@ -38,18 +38,4 @@ def get_access_token(request):
     user = exchange_access_token(oauth_token, url, user_id)
     login(request, user)
     
-    return redirect('dashboard')
-
-
-@login_required
-def unknown_modules_warnings(request):
-    """
-    After a user is logged in, they are redirected to this view before they are
-    send to their dashboard. It will show them if there are any modules that 
-    haven't been added to their profile as they haven't been scraped yet.
-    """
-    unknown_modules = request.user.unknown_modules.all()
-    if not unknown_modules.exists():
-        return redirect('dashboard')
-    
-    return render(request, 'unknown_modules.html', {'modules': unknown_modules})
+    return redirect('unknown_modules_warnings')

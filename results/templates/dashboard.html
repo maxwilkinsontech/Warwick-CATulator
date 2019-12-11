@@ -5,6 +5,25 @@
 {% block content %}
 	<h3>Hi {{ request.user.first_name }}, here are your module results.</h3>
 
+	{% if unknown_modules %}
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<p>
+				We've had an issue when trying to import all of your modules from Tabula. This an fault in the
+				Warwick systems. Some of your modules may not be shown. We have been notified of this and
+				will manually add these modules as soon as possible.
+				<br>These modules are:
+				<ul>
+					{% for module in unknown_modules %}
+						<li >{{ module.module_code }}</li>
+					{% endfor %}
+				</ul>
+			</p>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	{% endif %}
+
 	{% for year in user.grades.all %}
 		<h5 class="mt-3">{{ year.year|ordinal }} Year Modules <a href="{% url 'select_module' %}"><i class="fas fa-plus"></i></a></h5>
 		Weighted Grade: <b>{{ year.calculate_grade|floatformat:1 }}%</b>

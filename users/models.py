@@ -81,6 +81,7 @@ class RequestTokenStore(models.Model):
         match found.
         """
         secret = cls.objects.filter(oauth_token=token).order_by('id').first()
+        
         if secret is None:
             return ''
 

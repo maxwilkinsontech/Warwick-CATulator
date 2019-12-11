@@ -22,7 +22,9 @@ def home(request):
 @login_required
 def dashboard(request):
     """Display the user's Modules"""
-    return render(request, 'dashboard.html')
+    unknown_modules = request.user.unknown_modules.all()
+
+    return render(request, 'dashboard.html', {'unknown_modules': unknown_modules})
 
 
 class ViewModuleResult(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
