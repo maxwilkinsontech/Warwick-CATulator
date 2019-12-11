@@ -48,12 +48,12 @@ class ViewModuleResult(ModuleResultPermissionMixin, DetailView):
                 assessment.result = result
                 assessment.save()
 
-        return redirect('view_module_result', module_result.slug)
+        return redirect('view_module/view_module_result', module_result.slug)
 
 
 class ViewModuleResultExperimental(ModuleResultPermissionMixin, DetailView):
     """Retrive a ModuleResult and display the experimental mode template"""
-    template_name = 'view_module_result_experimental.html'
+    template_name = 'view_module/view_module_result_experimental.html'
     model = ModuleResult
 
 
@@ -68,7 +68,7 @@ def delete_module_result(request, slug):
         if module_year.is_module_result_empty():
             module_year.delete()
 
-        return redirect('dashboard')  
+        return redirect('dashboard')
 
 def select_module(request):
     """Return page on GET and save Assessment results on POST"""
@@ -117,7 +117,7 @@ def select_module(request):
     else:
         form = ModuleForm()
     
-    return render(request, 'select_module.html', {'form': form})
+    return render(request, 'add_module/select_module.html', {'form': form})
 
 def get_assessment_group(request):
     """Return a table (in html) of the AssessmentGroups for a given module
@@ -128,7 +128,7 @@ def get_assessment_group(request):
     module = get_object_or_404(Module, module_code=module_code, academic_year=academic_year)
 
     context = {'assessment_groups': module.assessment_groups.all()}
-    html = render_to_string('get_assessment_group.html', context)
+    html = render_to_string('add_module/get_assessment_group.html', context)
     return HttpResponse(html)
 
 def get_assessments(request):
@@ -137,5 +137,5 @@ def get_assessments(request):
     assessment_group = get_object_or_404(AssessmentGroup, pk=assessment_group_id)
 
     context = {'assessments': assessment_group.assessments.all()}
-    html = render_to_string('get_assessments.html', context)
+    html = render_to_string('add_module/get_assessments.html', context)
     return HttpResponse(html)
