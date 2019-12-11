@@ -35,6 +35,8 @@ class YearGrade(models.Model):
             total_cats += module.assessment_group.module_cats
             unweighted_grade += module.assessment_group.module_cats * module.calculate_grade() 
 
+        if total_cats == 0:
+            return total_cats
         return unweighted_grade / total_cats
 
 class ModuleResult(models.Model):
