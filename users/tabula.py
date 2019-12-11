@@ -1,6 +1,4 @@
-import requests
-
-from modules.models import Course, Module, AssessmentGroup
+from modules.models import Course, Module, AssessmentGroup, UndefinedModule
 from results.models import ModuleResult, YearGrade
 from users.models import User
 
@@ -8,7 +6,7 @@ TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
 
 def retreive_member_infomation(user):
     """
-    This method is used to populate the user's profile with infomation from 
+    This method is used to populate the user's profile with infomation from
     Tabula.
     """
     oauth = user.get_oauth_session()
@@ -64,7 +62,13 @@ def save_modules(user, years, modules):
             .first()
         )
         if module_info is None:
-            print('Module ' + str(module_code) + ' does not exist')            
+            UndefinedModule.objects.create(
+                user=user,
+                year=years[academic_year],
+                module_code=module_code,
+                assessment_group_code=assessment_group,
+                academic_year=academic_year
+            )      
             continue
 
         # TODO: FILTER BY CATS TOO
@@ -79,7 +83,13 @@ def save_modules(user, years, modules):
             if assessment_groups.count() == 1:
                 assessment_group = assessment_groups.first()
             else:
-                print('Module ' + str(module_code) + ' assessment group does not exist')
+                UndefinedModule.objects.create(
+                    user=user,
+                    year=years[academic_year],
+                    module_code=module_code,
+                    assessment_group_code=assessment_group,
+                    academic_year=academic_year
+                )
                 continue       
 
         ModuleResult.objects.create(
@@ -92,7 +102,7 @@ def save_modules(user, years, modules):
 
 def get_years(user, years):
     """
-    Return a dict with the academic year and corrosponding YearGrade of the 
+    Return a dict with the academic year and corrosponding YearGrade of the
     user's course.
     """
     years_dict = {}

@@ -2,11 +2,12 @@ from django.db import models
 
 from users.models import User
 
+
 class Course(models.Model):
     """
     Stores a single Course entry, related to
     :model:'users.User'
-    
+
     Model to store data about a student's course.
     """
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -17,12 +18,12 @@ class Course(models.Model):
         return '[' + self.course_name + '] ' + self.user.get_full_name()
 
 class Module(models.Model):
-    """
-    Stores a single Module entry
+    """Stores a single Module entry.
 
-    Several Modules are taken by student each year. The Assessments of Modules
-    can vary for year to year. Not all Modules are weighted the same.
-    """    
+    Several Modules are taken by student each year. The Assessments of
+    Modules can vary for year to year. Not all Modules are weighted the
+    same.
+    """
     ACADEMIC_YEARS = (
         ('19/20', '19/20'),
         ('18/19', '18/19'),
@@ -81,5 +82,8 @@ class UndefinedModule(models.Model):
     telling me what modules need creating.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    year = models.IntegerField()
     module_code = models.CharField(max_length=50)
+    assessment_group_code = models.CharField(max_length=50)
+    academic_year = models.CharField(max_length=5)
     date = models.DateTimeField(auto_now_add=True)

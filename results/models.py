@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import models
 
-from modules.models import Module, AssessmentGroup, Assessment
+from modules.models import Module, AssessmentGroup, Assessment, UndefinedModule
 from users.models import User
 
 class YearGrade(models.Model):
@@ -26,7 +26,9 @@ class YearGrade(models.Model):
         return self.module_result_years.count() == 0
 
     def calculate_grade(self):
-        """Calculate the percentage for this year """
+        """
+        Calculate the weighted percentage grade for this year.
+        """
         total_cats = 0
         unweighted_grade = 0
         for module in self.module_result_years.all():
@@ -121,3 +123,33 @@ def add_assessments_after_created(sender, instance, created, **kwargs):
                 module_result=instance,
                 assessment_id=assessment.id,
             )
+
+@receiver(post_save, sender=Module)
+def undefined_module_to_module(sender, instance, created, **kwargs):
+    """
+    Whenever a new module is created, check if a user needs it added to
+    their profile.
+    """
+    if created:
+        undefined_modules = UndefinedModule.objects.filter(module_code=instance.module_code)
+        if undefined_modules.exists():
+            for module in undefined_modules:
+                module_info = (
+                    Module
+                    .objects
+                    .filter(module_code=module.module_code)
+                    .order_by('id')
+                    .first()
+                )
+
+                assessment_group = module_info.assessment_groups.filter(
+                    assessment_group_code=module.assessment_group_code
+                )
+
+                ModuleResult.objects.create(
+                    user=module.user,
+                    year=module.year,
+                    module=module_info,
+                    assessment_group=assessment_group,
+                    academic_year=module.academic_year
+                )
