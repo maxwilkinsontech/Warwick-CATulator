@@ -38,7 +38,7 @@ class Module(models.Model):
     module_name = models.CharField(max_length=200)
 
     def __str__(self):
-        return self.module_code
+        return '[' + self.module_code + '] ' + self.module_name
 
 class AssessmentGroup(models.Model):
     """
@@ -87,3 +87,6 @@ class UndefinedModule(models.Model):
     assessment_group_code = models.CharField(max_length=50)
     academic_year = models.CharField(max_length=5)
     date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.module_code

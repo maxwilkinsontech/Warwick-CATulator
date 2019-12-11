@@ -13,6 +13,6 @@ class ModuleForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(ModuleForm, self).__init__(*args, **kwargs)
-        self.fields['module_code'].widget.attrs['class'] = 'form-control mb-2'
+        self.fields['module_code'].widget.attrs['class'] = 'mx-2 form-control js-example-basic-single'
         self.fields['module_code'].label = 'Module'
         self.fields['academic_year'].widget.attrs['class'] = 'form-control'

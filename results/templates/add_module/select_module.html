@@ -25,20 +25,34 @@
 {% endblock %}
 
 {% block scripts %}
+    <!-- Scripts for select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.js-example-basic-single').select2({
+                placeholder: "Select a module",
+                width: 'resolve'
+            });
+        });
+    </script>
+
+    <!-- Scripts for ajax call to server -->
     <script>
         $("#id_module_code, #id_academic_year").change(function () {
             $("#assessment_group_div").hide();
             $("#assessment_result_div").hide();
             $("#input[name=groups]").prop("readonly", false);
 
-            var module_code = $("#id_module_code").find(":selected").text();
+            var module_id = $("#id_module_code").find(":selected").val();
             var academic_year = $("#id_academic_year").val();
 
             $.ajax({
                 type: 'GET',
                 url: '{% url 'get_assessment_group' %}',
                 data: {
-                    'module_code': module_code,
+                    'module_id': module_id,
                     'academic_year': academic_year
                 },
                 success: function (data) {
