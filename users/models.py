@@ -1,9 +1,10 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
 from requests_oauthlib import OAuth1Session
+from django.conf import settings
+from django.db import models
 
-from .utils import CONSUMER_KEY, CONSUMER_SECRET, CustomClient
+from .utils import CustomClient
 
 class UserManager(BaseUserManager):
     """Define a model manager for User model with no username field."""
@@ -41,7 +42,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    # store tokens for Warwick OAuth
+    # fields for Warwick OAuth
     user_id = models.IntegerField(null=True, unique=True)
     access_token = models.CharField(max_length=100, null=True)
     access_token_secret = models.CharField(max_length=100, null=True)
@@ -53,24 +54,22 @@ class User(AbstractUser):
 
     def get_oauth_session(self):
         """
-        Return a OAuthSession to be used for requests to the 
-        Tabula API.
+        Return a OAuthSession to be used for requests to the Tabula API.
         """ 
         oauth = OAuth1Session(
-            CONSUMER_KEY, 
-            CONSUMER_SECRET,
+            settings.CONSUMER_KEY, 
+            settings.CONSUMER_SECRET,
             resource_owner_key=self.access_token,              
             resource_owner_secret=self.access_token_secret, 
-            client_class=CustomClient)
-
+            client_class=CustomClient
+        )
         return oauth
 
 class RequestTokenStore(models.Model):
     """
-    Model to store authorized tokens returned from warwick 
-    OAuth API. This needs to be used to store both the oauth_token
-    and oauth_token_secret. The oauth_token_secret is retrived 
-    using the oauth_token as the key.
+    Model to store authorized tokens returned from warwick OAuth API. Stores 
+    both the oauth_token and oauth_token_secret. The oauth_token_secret is 
+    retrived using the oauth_token as the key.
     """
     oauth_token = models.CharField(max_length=200)
     oauth_token_secret = models.CharField(max_length=200)
@@ -78,11 +77,12 @@ class RequestTokenStore(models.Model):
     @classmethod
     def get_secret(cls, token):
         """
-        Return oauth_token_secret given the oauth_token or an
-        emprty string if no match.
+        Return oauth_token_secret given an oauth_token or an empty string if no 
+        match found.
         """
-        secret = RequestTokenStore.objects.filter(oauth_token=token).order_by('id').first()
+        secret = cls.objects.filter(oauth_token=token).order_by('id').first()
+        
         if secret is None:
-            secret = ''
+            return ''
 
         return secret.oauth_token_secret

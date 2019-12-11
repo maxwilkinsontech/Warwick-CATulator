@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <h2 class="font-weight-light"><a href="{% url 'dashboard' %}"><i class="fas fa-arrow-left"></i></a> 1) Select Module <i id="check-1" class="fas fa-check" style="display: none;"></i></h2>
+            <p class="text-muted">Please select a module from the dropdown as well as the academic year in which you took it.</p>
+            {{ form }}
+            <a data-toggle="modal" data-target="#exampleModal" class="mt-2 float-right text-muted">module not here?</a>
+        </div>
+        <div id="assessment_group_div">
+            <div id="assessment_group_table"></div>
+            <button type="button" id="select_assessment_group" class="btn btn-primary btn-block" style="display: none">Next</button>
+        </div>
+        <div id="assessment_result_div">
+            <div id="assessment_result_input"></div>
+        </div>
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Missing Modules</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Due to an issue in the Warwick systems, not all modules may be shown. We are aware of this and are 
+                    working to add all of the modules to the site as quickly as we can. 
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    <!-- Scripts for select2 -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.12/dist/js/select2.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('.js-example-responsive').select2({
+                placeholder: "Select a module",
+                width: '100%'
+            });
+        });
+    </script>
+
+    <!-- Scripts for ajax call to server -->
+    <script>
+        $("#id_module_code, #id_academic_year").change(function () {
+            $("#assessment_group_div").hide();
+            $("#assessment_result_div").hide();
+            $("#input[name=groups]").prop("readonly", false);
+
+            var module_code = $("#id_module_code").find(":selected").val();
+            var academic_year = $("#id_academic_year").val();
+
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'get_assessment_group' %}',
+                data: {
+                    'module_code': module_code,
+                    'academic_year': academic_year
+                },
+                success: function (data) {
+                    $("#assessment_group_div").show();
+                    $('#assessment_group_table').html(data);
+                    $('#select_assessment_group').show();
+                    $('#check-1').show();
+                },
+                error: function(err) {
+                    $('#check-1').hide();
+                }
+            });
+        });
+
+        $("#select_assessment_group").click(function () {
+            var assessment_group_id = $('input[name=groups]:checked').val();
+
+            $.ajax({
+                type: 'GET',
+                url: '{% url 'get_assessments' %}',
+                data: {
+                    'assessment_group_id': assessment_group_id
+                },
+                success: function (data) {
+                    $("#assessment_result_div").show();
+                    $('#assessment_result_input').html(data);
+                    $('#select_assessment_group').hide();
+                    $(':radio:not(:checked)').attr('disabled', true);
+                    $('#check-2').show();
+                }
+            });
+        });
+    </script>
+{% endblock %}

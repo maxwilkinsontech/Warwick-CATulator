@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+    {% for module in modules %}
+        <li>{{ module.user }}: {{ module }}</li>
+    {% empty %} 
+        <li>No new modules created.</li>
+    {% endfor %}
+    </ul>
+{% endblock %}

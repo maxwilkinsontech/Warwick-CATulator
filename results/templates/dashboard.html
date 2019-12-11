@@ -1,14 +1,39 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load humanize %}
 
 {% block content %}
 	<h3>Hi {{ request.user.first_name }}, here are your module results.</h3>
 
+	{% if unknown_modules %}
+		<div class="alert alert-warning alert-dismissible fade show" role="alert">
+			<p>
+				We've had an issue when trying to import all of your modules from Tabula. This an fault in the
+				Warwick systems. Some of your modules may not be shown. We have been notified of this and
+				will manually add these modules as soon as possible.
+				<br>These modules are:
+				<ul>
+					{% for module in unknown_modules %}
+						<li >{{ module.module_code }}</li>
+					{% endfor %}
+				</ul>
+			</p>
+			<button type="button" class="close" data-dismiss="alert" aria-label="Close">
+				<span aria-hidden="true">&times;</span>
+			</button>
+		</div>
+	{% endif %}
+
 	{% for year in user.grades.all %}
 		<h5 class="mt-3">{{ year.year|ordinal }} Year Modules <a href="{% url 'select_module' %}"><i class="fas fa-plus"></i></a></h5>
 		Weighted Grade: <b>{{ year.calculate_grade|floatformat:1 }}%</b>
+		<button style="all: unset;" type="button" class="" data-toggle="tooltip" data-placement="top" 
+				title="This is the grade based on all of your modules for year {{ year.year }}. This number may be slighly off from your actual final grade
+				if you have modules below that don't count towards the year grade (e.g. taking an extra module). ">
+			<img src="{% static 'admin/img/icon-unknown.svg' %}">
+		</button>
 		<div class="row">
-			{% for result in year.module_result_years.all %}
+			{% for result in year.modules %}
 				<div class="col-md-6 col-lg-4 col-xl-3">
 					<div class="card mt-2">
 						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
@@ -18,7 +43,7 @@
 							<p class="card-text">
 								<ul style="padding: 0; list-style-type: none;">
 									{% for assessment in result.assessment_results.all %}
-										<li>{{ assessment }}</li>
+										<li><b>- </b>{{ assessment }} <div class="text-muted" style="display:inline;">[{{ assessment.assessment.percentage }}%]</div></li>
 									{% endfor %}
 								</ul>
 							</p>
@@ -35,4 +60,12 @@
 		<a class="btn btn-primary" href="{% url 'select_module' %}">Add a module</a>
 	{% endfor %}
 
+{% endblock %}
+
+{% block scripts %}
+	<script>
+		$(function () {
+			$('[data-toggle="tooltip"]').tooltip()
+		})
+	</script>
 {% endblock %}

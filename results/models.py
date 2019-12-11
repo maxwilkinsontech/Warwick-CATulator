@@ -5,7 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.db import models
 
-from modules.models import Module, AssessmentGroup, Assessment
+from modules.models import Module, AssessmentGroup, Assessment, UndefinedModule
 from users.models import User
 
 class YearGrade(models.Model):
@@ -13,9 +13,8 @@ class YearGrade(models.Model):
     Stores a single Year entry, related to
     :model:'user.User'
 
-    A YearGrade is comprised of several Modules. The weighted sum of the 
-    Module marks is calculated to determine the classification of 
-    the year for the student.
+    A YearGrade is comprised of several Modules. The weighted sum of the Module
+    marks is calculated to determine the classification of the year.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grades')
     year = models.PositiveSmallIntegerField()
@@ -27,14 +26,25 @@ class YearGrade(models.Model):
         return self.module_result_years.count() == 0
 
     def calculate_grade(self):
-        """Calculate the percentage for this year """
+        """
+        Calculate the weighted percentage grade for this year.
+        """
         total_cats = 0
         unweighted_grade = 0
         for module in self.module_result_years.all():
             total_cats += module.assessment_group.module_cats
             unweighted_grade += module.assessment_group.module_cats * module.calculate_grade() 
 
+        if total_cats == 0:
+            return total_cats
         return unweighted_grade / total_cats
+
+    def modules(self):
+        """
+        Return the modules associated with this year ordered by module_code
+        """
+        return self.module_result_years.all().order_by('module__module_code')
+
 
 class ModuleResult(models.Model):
     """
@@ -61,6 +71,9 @@ class ModuleResult(models.Model):
         return self.module.module_code
 
     def save(self, *args, **kwargs):
+        """
+        Generate a random 8 digit slug as this is visable in the url.
+        """
         if not self.slug:
             while True:
                 slug = ''.join(random.choice(string.digits) for _ in range(8))
@@ -111,7 +124,7 @@ class AssessmentResult(models.Model):
         super(AssessmentResult, self).save(*args, **kwargs)
 
 @receiver(post_save, sender=ModuleResult)
-def add_assessments_after_create(sender, instance, created, **kwargs):
+def add_assessments_after_created(sender, instance, created, **kwargs):
     if created:
         assessments = instance.assessment_group.assessments.all()
         for assessment in assessments:
