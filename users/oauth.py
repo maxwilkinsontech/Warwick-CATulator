@@ -73,5 +73,6 @@ def exchange_access_token(oauth_token, returned_url, user_id):
         user.access_token = access_tokens['oauth_token']
         user.access_token_secret = access_tokens['oauth_token_secret']
         user.save()
+        retreive_member_infomation(user, created=False)
 
     return user

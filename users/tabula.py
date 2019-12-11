@@ -20,12 +20,9 @@ def retreive_member_infomation(user, created=True):
     user.email = data['email']
     user.save()
     # save user's course info
-    if created:
-        save_course_infomation(user, data)
-    else:
-        update_course_infomation(user, data)
+    save_course_infomation(user, data, created)
 
-def save_course_infomation(user, data):
+def save_course_infomation(user, data, created):
     """
     Retrive infomation about the student's course. May be more than 1 course. 
     Get user's active course: marked with mostSignificant=true.
@@ -48,70 +45,95 @@ def save_course_infomation(user, data):
     )
 
     years = get_years(user, course['studentCourseYearDetails'])
-    save_modules(user, years, course['moduleRegistrations'])
+    modules = course['moduleRegistrations']
+
+    if created:
+        save_modules(user, years, modules)
+    else:
+        update_modules(user, years, modules)
+    
+def update_modules(user, years, modules):
+    """
+    This method is used to update a user's information about their course. It is
+    called whenever they login via the web sign-on. No action is taken on any 
+    conflicts - the original remains the same. Only modules that are not already
+    in the user's profile are added.
+    """
+    for module in modules:
+        poss_current_module = user.module_results.filter(
+            module__module_code=module['module']['code'].upper()
+        )
+        if not poss_current_module.exists():
+            save_module(user, years, module)
 
 def save_modules(user, years, modules):
     """
     Create the appropriate models for the modules the student is taking.
     """
     for module in modules:
-        module_code = module['module']['code']
-        module_cats = module['cats']
-        academic_year = module['academicYear']
-        assessment_group = module['assessmentGroup']
-        
+        save_module(user, years, module)
+
+def save_module(user, years, module):
+    """
+    Create the appropriate models for the modules the student is taking.
+    """
+    module_code = module['module']['code']
+    module_cats = module['cats']
+    academic_year = module['academicYear']
+    assessment_group = module['assessmentGroup']
+    
+    module_info = (
+        Module
+        .objects
+        .filter(module_code=module_code.upper(), academic_year=academic_year)
+        .order_by('id')
+        .first()
+    )
+    if module_info is None:
         module_info = (
             Module
             .objects
-            .filter(module_code=module_code.upper(), academic_year=academic_year)
+            .filter(module_code=module_code.upper(), academic_year='19/20')
             .order_by('id')
             .first()
         )
         if module_info is None:
-            module_info = (
-                Module
-                .objects
-                .filter(module_code=module_code.upper(), academic_year='19/20')
-                .order_by('id')
-                .first()
+            UndefinedModule.objects.create(
+                user=user,
+                year=years[academic_year].year,
+                module_code=module_code,
+                assessment_group_code=assessment_group,
+                academic_year=academic_year
+            )      
+            return
+
+    assessment_groups = module_info.assessment_groups.all()
+    assessment_group = (
+        assessment_groups
+        .filter(assessment_group_code=assessment_group, module_cats=module_cats)
+        .order_by('id')
+        .first()
+    )
+    if assessment_group is None:
+        if assessment_groups.count() == 1:
+            assessment_group = assessment_groups.first()
+        else:
+            UndefinedModule.objects.create(
+                user=user,
+                year=years[academic_year].year,
+                module_code=module_code,
+                assessment_group_code=assessment_group,
+                academic_year=academic_year
             )
-            if module_info is None:
-                UndefinedModule.objects.create(
-                    user=user,
-                    year=years[academic_year].year,
-                    module_code=module_code,
-                    assessment_group_code=assessment_group,
-                    academic_year=academic_year
-                )      
-                continue
+            return       
 
-        assessment_groups = module_info.assessment_groups.all()
-        assessment_group = (
-            assessment_groups
-            .filter(assessment_group_code=assessment_group, module_cats=module_cats)
-            .order_by('id')
-            .first()
-        )
-        if assessment_group is None:
-            if assessment_groups.count() == 1:
-                assessment_group = assessment_groups.first()
-            else:
-                UndefinedModule.objects.create(
-                    user=user,
-                    year=years[academic_year].year,
-                    module_code=module_code,
-                    assessment_group_code=assessment_group,
-                    academic_year=academic_year
-                )
-                continue       
-
-        ModuleResult.objects.create(
-            user=user,
-            year=years[academic_year],
-            module=module_info,
-            assessment_group=assessment_group,
-            academic_year=academic_year
-        )
+    ModuleResult.objects.create(
+        user=user,
+        year=years[academic_year],
+        module=module_info,
+        assessment_group=assessment_group,
+        academic_year=academic_year
+    )
 
 def get_years(user, years):
     """
@@ -128,10 +150,3 @@ def get_years(user, years):
         years_dict[year['academicYear']] = year_grade
 
     return years_dict
-
-def update_course_infomation(user, data):
-    """
-    This method is used to update a user's information about their course. It is
-    called whenever they login via the web sign-on. Any comflicts are handled by...
-    """
-    pass
