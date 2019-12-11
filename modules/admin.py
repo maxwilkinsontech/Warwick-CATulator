@@ -18,6 +18,7 @@ class AssessmentGroupAdmin(admin.ModelAdmin):
 class ModuleAdmin(admin.ModelAdmin):
     model = Module
     inlines = [AssessmentGroupInline]
+    list_filter = ('academic_year',)
 
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(AssessmentGroup, AssessmentGroupAdmin)

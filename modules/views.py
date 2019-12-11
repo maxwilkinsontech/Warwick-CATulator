@@ -6,6 +6,6 @@ from .models import AssessmentGroup
 
 def start_module_scrape(request):
     # count_modules()
-    start()
-    # get_modules()
+    # start()
+    get_modules()
     return render(request, 'index.html')

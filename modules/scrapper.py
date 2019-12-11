@@ -2,10 +2,15 @@
 In order to get the data on each module, I have scrapped Warwick's Module
 catalog (https://warwick.ac.uk/services/aro/dar/quality/modules/).
 """
+# for multiprocessing to work
+import django
+django.setup()
+# imports
 import requests
 import urllib.request
 import time
 from bs4 import BeautifulSoup
+from multiprocessing import Pool
 
 from .models import Module, AssessmentGroup, Assessment
 from users.models import User
@@ -31,13 +36,17 @@ def get_modules():
 
     unfound_module = []
 
+    # p = Pool(5)
+    # returned_module_codes = p.map(save_module, modules)
+
     for module in modules:
         returned_module_code = save_module(module)
         if returned_module_code is not None:
             unfound_module.append(returned_module_code)
 
-    print(*unfound_module)
-    print(len(unfound_module))
+    # unfound_modules = [x for x in returned_module_codes if x is not None]
+    # print(*unfound_modules)
+    # print(len(unfound_modules))
 
 def save_module(module):
     """
@@ -49,15 +58,16 @@ def save_module(module):
     department_code = module['adminDepartment']['code']
 
     url = (
-        'https://warwick.ac.uk/services/aro/dar/quality/modules/undergraduate/'
+        'https://warwick.ac.uk/services/aro/dar/quality/modules/archive201819/undergraduate-1819/'
         + department_code
         + '/'
         + module_code
     )
+    print(url)
 
     response = requests.get(url)
     if response.status_code == 404:
-        print(module_code)
+        print('404: ' + str(module_code))
         return module_code
         
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -67,13 +77,14 @@ def save_module(module):
         assessment_groups_table = soup.find('table', class_='table table-striped').findAll('tbody')
         
         if assessment_groups_table is None:
-            print(module_code)
+            print('agt: ' + str(module_code))
             return module_code
 
         module = Module.objects.create(
+            academic_year='18/19',
             faculty=department_name,
             module_code=module_code,
-            module_name=module_name,
+            module_name=module_name
         )
 
         for body in assessment_groups_table:
@@ -95,7 +106,7 @@ def save_module(module):
                         assessment_groups_dict.get(prev_assessment_name, []).append([None, cols[1].text, cols[2].text])
                 except IndexError:
                     module.delete()
-                    print(module_code)
+                    print('ie: ' + str(module_code))
                     return module_code
 
             for key, value in assessment_groups_dict.items():
@@ -112,6 +123,7 @@ def save_module(module):
                         assessment_name=assessment[1],
                         percentage=float(assessment[2].strip('%'))
                     )
+        print('******' + str(module_code))
     return
 
 def get_faculties(request_data):
