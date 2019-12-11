@@ -14,11 +14,13 @@ class AssessmentGroupInline(admin.TabularInline):
 class AssessmentGroupAdmin(admin.ModelAdmin):
     model = AssessmentGroup
     inlines = [AssessmentInline]
+    search_fields = ('module__module_code', 'module__module_name',)
 
 class ModuleAdmin(admin.ModelAdmin):
     model = Module
     inlines = [AssessmentGroupInline]
     list_filter = ('academic_year',)
+    search_fields = ('module_code', 'module_name',)
 
 admin.site.register(Module, ModuleAdmin)
 admin.site.register(AssessmentGroup, AssessmentGroupAdmin)
