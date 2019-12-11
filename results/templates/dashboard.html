@@ -33,7 +33,7 @@
 			<img src="{% static 'admin/img/icon-unknown.svg' %}">
 		</button>
 		<div class="row">
-			{% for result in year.module_result_years.all %}
+			{% for result in year.modules %}
 				<div class="col-md-6 col-lg-4 col-xl-3">
 					<div class="card mt-2">
 						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>

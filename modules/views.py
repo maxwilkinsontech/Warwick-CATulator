@@ -9,8 +9,8 @@ from results.utils import get_or_create_year
 def start_module_scrape(request):
     # count_modules()
     # start()
-    #get_modules()
-    get_1920_diff_modules()
+    get_modules()
+    # get_1920_diff_modules()
     return render(request, 'index.html')
 
 @login_required

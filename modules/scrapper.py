@@ -30,8 +30,8 @@ def get_1920_diff_modules():
     print(modules_19.count())
     print(modules_18.count())
 
-    diff_19 = [m for m in set(modules_19) if m not in set(modules_18)]
-    diff_18 = [m for m in set(modules_20) if m not in set(modules_18)]
+    diff_19 = [m for m in set(modules_20) if m not in set(modules_19)]
+    diff_18 = [m for m in set(modules_18) if m not in set(modules_19)]
 
     diff = set(diff_19 + diff_18)
 

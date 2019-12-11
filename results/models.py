@@ -39,6 +39,13 @@ class YearGrade(models.Model):
             return total_cats
         return unweighted_grade / total_cats
 
+    def modules(self):
+        """
+        Return the modules associated with this year ordered by module_code
+        """
+        return self.module_result_years.all().order_by('module__module_code')
+
+
 class ModuleResult(models.Model):
     """
     Stores a single ModuleResult entry, related to

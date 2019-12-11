@@ -47,21 +47,8 @@ def save_course_infomation(user, data):
         course_year_length=course_year_length
     )
 
-    courses = course['moduleRegistrations']
-    courses.append(
-        {'academicYear': '19/20',
-        'assessmentGroup': 'X',
-        'cats': 15.0,
-        'module': {'adminDepartment': {'code': 'cs', 'name': 'DCS'},
-                    'code': 'XXXXX',
-                    'name': 'XXXXX'},
-        'occurrence': 'A',
-        'status': 'Core'},
-    )
-
     years = get_years(user, course['studentCourseYearDetails'])
-    # save_modules(user, years, course['moduleRegistrations'])
-    save_modules(user, years, courses)
+    save_modules(user, years, course['moduleRegistrations'])
 
 def save_modules(user, years, modules):
     """
@@ -69,30 +56,39 @@ def save_modules(user, years, modules):
     """
     for module in modules:
         module_code = module['module']['code']
+        module_cats = module['cats']
         academic_year = module['academicYear']
         assessment_group = module['assessmentGroup']
         
         module_info = (
             Module
             .objects
-            .filter(module_code=module_code.upper())
+            .filter(module_code=module_code.upper(), academic_year=academic_year)
             .order_by('id')
             .first()
         )
         if module_info is None:
-            UndefinedModule.objects.create(
-                user=user,
-                year=years[academic_year].year,
-                module_code=module_code,
-                assessment_group_code=assessment_group,
-                academic_year=academic_year
-            )      
-            continue
-        # TODO: FILTER BY CATS TOO
+            module_info = (
+                Module
+                .objects
+                .filter(module_code=module_code.upper(), academic_year='19/20')
+                .order_by('id')
+                .first()
+            )
+            if module_info is None:
+                UndefinedModule.objects.create(
+                    user=user,
+                    year=years[academic_year].year,
+                    module_code=module_code,
+                    assessment_group_code=assessment_group,
+                    academic_year=academic_year
+                )      
+                continue
+
         assessment_groups = module_info.assessment_groups.all()
         assessment_group = (
             assessment_groups
-            .filter(assessment_group_code=assessment_group)
+            .filter(assessment_group_code=assessment_group, module_cats=module_cats)
             .order_by('id')
             .first()
         )

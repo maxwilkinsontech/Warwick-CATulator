@@ -38,4 +38,4 @@ def get_access_token(request):
     user = exchange_access_token(oauth_token, url, user_id)
     login(request, user)
     
-    return redirect('unknown_modules_warnings')
+    return redirect('dashboard')
