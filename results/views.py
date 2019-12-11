@@ -1,8 +1,8 @@
+from django.views.generic import DetailView, DeleteView, FormView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.generic import DetailView, DeleteView
 from django.views.decorators.http import require_POST
 from django.views.generic.edit import ProcessFormView
 from django.template.loader import render_to_string
