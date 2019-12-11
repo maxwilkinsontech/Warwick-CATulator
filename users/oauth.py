@@ -1,6 +1,5 @@
 """
-Methods that are used to authenticate the user with the Warwick
-oauth API
+Methods that are used to authenticate the user with the Warwick oauth API
 """
 import urllib.parse
 
