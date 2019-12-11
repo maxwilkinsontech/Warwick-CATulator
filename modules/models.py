@@ -78,8 +78,8 @@ class Assessment(models.Model):
 
 class UndefinedModule(models.Model):
     """
-    This model is for modules that dont have a Module item. It will be used for 
-    telling me what modules need creating.
+    This model is for modules that dont have an associated Module. It will be 
+    used for telling me what modules need creating and for which users.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='unknown_modules')
     year = models.IntegerField()
