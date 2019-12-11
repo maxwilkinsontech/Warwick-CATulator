@@ -2,12 +2,14 @@ from modules.models import Course, Module, AssessmentGroup, UndefinedModule
 from results.models import ModuleResult, YearGrade
 from users.models import User
 
+
 TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
 
-def retreive_member_infomation(user):
+def retreive_member_infomation(user, created=True):
     """
     This method is used to populate the user's profile with infomation from
-    Tabula.
+    Tabula. The argument 'created' is used to tell the method if the user's 
+    information needs to be gathered for the first time or updated.
     """
     oauth = user.get_oauth_session()
     response = oauth.request("GET", TABULAR_URL)
@@ -18,7 +20,10 @@ def retreive_member_infomation(user):
     user.email = data['email']
     user.save()
     # save user's course info
-    save_course_infomation(user, data)
+    if created:
+        save_course_infomation(user, data)
+    else:
+        update_course_infomation(user, data)
 
 def save_course_infomation(user, data):
     """
@@ -115,3 +120,10 @@ def get_years(user, years):
         years_dict[year['academicYear']] = year_grade
 
     return years_dict
+
+def update_course_infomation(user, data):
+    """
+    This method is used to update a user's information about their course. It is
+    called whenever they login via the web sign-on. Any comflicts are handled by...
+    """
+    pass
