@@ -1,7 +1,7 @@
-from django.shortcuts import render
-from django.db.models import Sum
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
 
-from .scrapper import start, count_modules, get_modules
+from .scrapper import count_modules, get_modules
 from .models import UndefinedModule, Module
 from results.models import ModuleResult
 from results.utils import get_or_create_year
@@ -12,11 +12,15 @@ from results.utils import get_or_create_year
 #     get_modules()
 #     return render(request, 'index.html')
 
+@login_required
 def update_unknown_modules(request):
     """
     When a Module is created for a user that was missing a module, visit this 
     view to add the newly created module to their profile.
     """
+    if not request.user.is_superuser:
+        return redirect('dashboard')
+
     undefined_modules = UndefinedModule.objects.all()
     undefined_modules_unique = undefined_modules.values_list('module_code', flat=True).distinct()
 
