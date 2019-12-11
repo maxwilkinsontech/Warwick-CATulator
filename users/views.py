@@ -17,7 +17,7 @@ def login_view(request):
     This is going to get a token from the Warwick oauth site and
     redirect the user to authorize this site.
     """
-    url = obtain_request_token(callback='http://178.62.83.252:8000/callback/')
+    url = obtain_request_token(callback='https://warwickcatulator.co.uk/callback/')
     return redirect(url)
 
 
