@@ -1,16 +1,17 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
-from .scrapper import count_modules, get_modules
+from .scrapper import start, get_modules, get_1920_diff_modules
 from .models import UndefinedModule, Module
 from results.models import ModuleResult
 from results.utils import get_or_create_year
 
-# def start_module_scrape(request):
-#     # count_modules()
-#     # start()
-#     get_modules()
-#     return render(request, 'index.html')
+def start_module_scrape(request):
+    # count_modules()
+    # start()
+    #get_modules()
+    get_1920_diff_modules()
+    return render(request, 'index.html')
 
 @login_required
 def update_unknown_modules(request):
