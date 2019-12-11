@@ -130,9 +130,9 @@ def select_module(request):
 def get_assessment_group(request):
     """Return a table (in html) of the AssessmentGroups for a given module
     and acadmic year"""
-    module_id = request.GET.get('module_id')
+    module_code = request.GET.get('module_code')
     academic_year = request.GET.get('academic_year')
-    module = get_object_or_404(Module, pk=module_id, academic_year=academic_year)
+    module = get_object_or_404(Module, module_code=module_code, academic_year=academic_year)
 
     context = {'assessment_groups': module.assessment_groups.all()}
     html = render_to_string('add_module/get_assessment_group.html', context)

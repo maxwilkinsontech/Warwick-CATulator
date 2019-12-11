@@ -21,7 +21,7 @@ def login_view(request):
     """
     # Uncomment when not running locally.
     # url = obtain_request_token(callback='http://178.62.83.252:8000/callback/')
-    url = obtain_request_token()
+    url = obtain_request_token(callback='http://192.168.0.29:8000/callback')
     return redirect(url)
 
 

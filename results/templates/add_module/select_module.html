@@ -61,14 +61,14 @@
             $("#assessment_result_div").hide();
             $("#input[name=groups]").prop("readonly", false);
 
-            var module_id = $("#id_module_code").find(":selected").val();
+            var module_code = $("#id_module_code").find(":selected").val();
             var academic_year = $("#id_academic_year").val();
 
             $.ajax({
                 type: 'GET',
                 url: '{% url 'get_assessment_group' %}',
                 data: {
-                    'module_id': module_id,
+                    'module_code': module_code,
                     'academic_year': academic_year
                 },
                 success: function (data) {
