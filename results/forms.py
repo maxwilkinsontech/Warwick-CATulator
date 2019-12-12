@@ -13,7 +13,7 @@ class ModuleForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         super(ModuleForm, self).__init__(*args, **kwargs)
-        distinct_module_codes = Module.objects.values_list('module_code', flat=True).distinct()
+        distinct_module_codes = Module.objects.values_list('module_code', flat=True).order_by('module_code').distinct()
 
         self.fields['module_code'] = forms.ModelChoiceField(queryset=distinct_module_codes)
         self.fields['module_code'].widget.attrs['class'] = 'mx-2 form-control js-example-responsive'
