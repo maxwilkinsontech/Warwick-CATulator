@@ -119,7 +119,7 @@ def select_module(request):
                 assessment.result = result
                 assessment.save()
 
-        return redirect('dashboard')
+        return redirect('view_module_result', module_result.slug)
     else:
         form = ModuleForm()
     
