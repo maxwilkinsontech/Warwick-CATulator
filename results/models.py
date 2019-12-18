@@ -96,6 +96,27 @@ class ModuleResult(models.Model):
 
         return grade
 
+    def result_state(self):
+        """
+        Return the state of the ModuleResult based upon how many assessments have 
+        been completed. Returns 1 if no assessments have results, 2 if all 
+        assessments have results and 3 if some assessments have results and some
+        don't.
+        """
+        assessments_completed = 0
+        assessments = self.assessment_results.all()
+
+        for assessment in assessments:
+            if assessment.result is not None:
+                assessments_completed += 1
+
+        if assessments_completed == 0:
+            return 1
+        elif assessments_completed == assessments.count():
+            return 2
+        else:
+            return 3
+
 
 class AssessmentResult(models.Model):
     """
