@@ -6,7 +6,9 @@
 		<h5>
 			Module Grade: {{ object.calculate_grade|floatformat:1 }}%
 		</h5>
-		<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>
+		{% if object.result_state != 2 %}
+			<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>
+		{% endif %}
 	</div>
 	<form method="POST">
 		{% csrf_token %}
