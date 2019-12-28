@@ -1,3 +1,4 @@
+from django.contrib.admin.views.decorators import staff_member_required
 from django.views.generic import DetailView, DeleteView, FormView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse, HttpResponseBadRequest
@@ -13,6 +14,7 @@ from .mixins import ModuleResultPermissionMixin
 from .utils import get_or_create_year
 from .forms import ModuleForm
 from modules.models import Module, AssessmentGroup
+from users.models import User
 
 
 def home(request):
@@ -26,6 +28,13 @@ def dashboard(request):
 
     return render(request, 'dashboard.html', {'unknown_modules': unknown_modules})
 
+@staff_member_required
+def user_dashboard(request, user_id):
+    """Display a given user's modules"""
+    user = get_object_or_404(User, user_id=user_id)
+    unknown_modules = user.unknown_modules.all()
+
+    return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules})
 
 class ViewModuleResult(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
     """Retrive a ModuleResult and update it on a POST request"""
