@@ -34,17 +34,17 @@ def update_unknown_modules(request):
                         assessment_group_code=to_add_module.assessment_group_code
                     )
 
-                    year = get_or_create_year(to_add_module.user, to_add_module.year)
+                    if assessment_group.exists():
+                        year = get_or_create_year(to_add_module.user, to_add_module.year)
 
-                    new_module = ModuleResult.objects.create(
-                        user=to_add_module.user,
-                        year=year,
-                        module=module,
-                        assessment_group=assessment_group.first(),
-                        academic_year=to_add_module.academic_year
-                    )
-                        
-                    undefined_modules_created.append(new_module)
-                    to_add_module.delete()
+                        new_module = ModuleResult.objects.create(
+                            user=to_add_module.user,
+                            year=year,
+                            module=module,
+                            assessment_group=assessment_group.first(),
+                            academic_year=to_add_module.academic_year
+                        )
+                        undefined_modules_created.append(new_module)
+                        to_add_module.delete()
 
     return render(request, 'update_unknown_modules.html', {'modules': undefined_modules_created})

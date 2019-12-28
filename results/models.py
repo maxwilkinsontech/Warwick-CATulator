@@ -61,7 +61,7 @@ class ModuleResult(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_results')
     year = models.ForeignKey(YearGrade, on_delete=models.CASCADE, related_name='module_result_years', null=True)
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_result_modules')
-    assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_result_groups', null=True)
+    assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_result_groups')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
 
     class Meta:
@@ -148,9 +148,8 @@ class AssessmentResult(models.Model):
 def add_assessments_after_created(sender, instance, created, **kwargs):
     if created:
         assessments = instance.assessment_group.assessments.all()
-        if assessments is not None:
-            for assessment in assessments:
-                AssessmentResult.objects.create(
-                    module_result=instance,
-                    assessment_id=assessment.id,
-                )
+        for assessment in assessments:
+            AssessmentResult.objects.create(
+                module_result=instance,
+                assessment_id=assessment.id,
+            )
