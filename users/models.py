@@ -65,6 +65,13 @@ class User(AbstractUser):
         )
         return oauth
 
+class TabulaDump(models.Model):
+    """
+    Model to store the raw json returned from the Tabula endpoint.
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    data = models.JSONField()
+
 class RequestTokenStore(models.Model):
     """
     Model to store authorized tokens returned from warwick OAuth API. Stores 

@@ -1,6 +1,6 @@
 from modules.models import Course, Module, AssessmentGroup, UndefinedModule
 from results.models import ModuleResult, YearGrade
-from users.models import User
+from users.models import User, TabulaDump
 
 
 TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
@@ -14,6 +14,7 @@ def retreive_member_infomation(user, created=True):
     oauth = user.get_oauth_session()
     response = oauth.request("GET", TABULAR_URL)
     data = response.json()['member']
+    save_json(user, data)
     # save basic user info
     user.first_name = data['firstName']
     user.last_name = data['lastName']
@@ -21,6 +22,15 @@ def retreive_member_infomation(user, created=True):
     user.save()
     # save user's course info
     save_course_infomation(user, data, created)
+
+def save_json(user, data):
+    """
+    Save the returned json data from Tabula to the database.
+    """
+    TabulaDump.objects.create(
+        user=user,
+        data=data
+    )
 
 def save_course_infomation(user, data, created):
     """
