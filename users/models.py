@@ -73,6 +73,9 @@ class TabulaDump(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     data = JSONField()
 
+    def __str__(self):
+        return self.user.get_full_name()
+
 class RequestTokenStore(models.Model):
     """
     Model to store authorized tokens returned from warwick OAuth API. Stores 
