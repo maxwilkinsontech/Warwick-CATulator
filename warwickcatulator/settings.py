@@ -139,5 +139,19 @@ LOGIN_URL = '/'
 LOGIN_REDIRECT_URL = '/dashboard/'
 LOGOUT_REDIRECT_URL = '/'
 
+# Warwick Tabula 
 CONSUMER_KEY = config('CONSUMER_KEY')
 CONSUMER_SECRET = config('CONSUMER_SECRET')
+
+# Sentry
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+
+sentry_sdk.init(
+    dsn="https://2c8474af0729420f870ff2920230301b@sentry.io/1868008",
+    integrations=[DjangoIntegration()],
+
+    # If you wish to associate users to errors (assuming you are using
+    # django.contrib.auth) you may enable sending PII data.
+    send_default_pii=True
+)
