@@ -3,7 +3,7 @@
 {% load humanize %}
 
 {% block content %}
-	<h3>Hi {{ user.get_full_name }}'s modules.</h3>
+	<h3>{{ user.get_full_name }}'s modules.</h3>
 
 	{% if unknown_modules %}
 		<div class="alert alert-warning alert-dismissible fade show" role="alert">
