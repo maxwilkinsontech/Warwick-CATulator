@@ -1,3 +1,4 @@
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, logout
 from django.shortcuts import render, redirect
@@ -19,7 +20,7 @@ def login_view(request):
     Redirect the user to authorize the request token via logging in to their 
     Warwick ITS account. They will be directed back to the callback argument.
     """
-    url = obtain_request_token(callback='https://warwickcatulator.co.uk/callback/')
+    url = obtain_request_token(callback='https://warwickcatulator.co.uk/callback')
     return redirect(url)
 
 
