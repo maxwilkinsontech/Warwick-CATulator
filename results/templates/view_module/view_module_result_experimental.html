@@ -18,7 +18,7 @@
 					<th>Your Result</th>
 				</thead>
 				<tbody>
-					{% for assessment in object.assessment_results.all %}
+					{% for assessment in view.assessments %}
 						<tr>
 							<td>{{ assessment.assessment.assessment_name }}</td>
 							<td>{{ assessment.assessment.percentage.normalize }}%</td>
