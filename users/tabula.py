@@ -109,7 +109,7 @@ def save_module(user, years, module):
             .first()
         )
         if module_info is None:
-            UndefinedModule.objects.create(
+            UndefinedModule.objects.get_or_create(
                 user=user,
                 year=years[academic_year].year,
                 module_code=module_code,
@@ -129,7 +129,7 @@ def save_module(user, years, module):
         if assessment_groups.count() == 1:
             assessment_group = assessment_groups.first()
         else:
-            UndefinedModule.objects.create(
+            UndefinedModule.objects.get_or_create(
                 user=user,
                 year=years[academic_year].year,
                 module_code=module_code,
