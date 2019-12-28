@@ -43,7 +43,7 @@ class YearGrade(models.Model):
         """
         Return the modules associated with this year ordered by module_code
         """
-        return self.module_result_years.all().order_by('module__module_code')
+        return self.module_result_years.prefetch_related('assessment_results').all().order_by('module__module_code')
 
 
 class ModuleResult(models.Model):

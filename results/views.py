@@ -32,7 +32,10 @@ def dashboard(request):
 
 @staff_member_required
 def user_dashboard(request, user_id):
-    """Display a given user's modules"""
+    """
+    Display a given user's modules the way that they would see it. Used  mainly 
+    for testing as it will also refresh their data from Tabula.
+    """
     user = get_object_or_404(User, user_id=user_id)
     retreive_member_infomation(user)
     unknown_modules = user.unknown_modules.all()

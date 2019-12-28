@@ -24,7 +24,7 @@
 		</div>
 	{% endif %}
 
-	{% for year in user.grades.all %}
+	{% for year in request.user.grades.all %}
 		<h5 class="mt-3">{{ year.year|ordinal }} Year Modules <a href="{% url 'select_module' %}"><i class="fas fa-plus"></i></a></h5>
 		Weighted Grade: <b>{{ year.calculate_grade|floatformat:1 }}%</b>
 		<button style="all: unset;" type="button" class="" data-toggle="tooltip" data-placement="top" 
