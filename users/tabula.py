@@ -38,7 +38,7 @@ def save_course_infomation(user, data, created):
     Get user's active course: marked with mostSignificant=true.
     """
     courses = data['studentCourseDetails']
-    course = courses[0]
+    course = courses[-1]
     if len(courses) > 1:
         for poss_course in courses:
             if course['mostSignificant']:
@@ -90,7 +90,7 @@ def save_module(user, years, module):
     module_code = module['module']['code']
     module_cats = module['cats']
     academic_year = module['academicYear']
-    assessment_group = module['assessmentGroup']
+    assessment_group_code = module['assessmentGroup']
     
     module_info = (
         Module
@@ -112,7 +112,7 @@ def save_module(user, years, module):
                 user=user,
                 year=years[academic_year].year,
                 module_code=module_code,
-                assessment_group_code=assessment_group,
+                assessment_group_code=assessment_group_code,
                 academic_year=academic_year
             )      
             return
@@ -120,7 +120,7 @@ def save_module(user, years, module):
     assessment_groups = module_info.assessment_groups.all()
     assessment_group = (
         assessment_groups
-        .filter(assessment_group_code=assessment_group, module_cats=module_cats)
+        .filter(assessment_group_code=assessment_group_code, module_cats=module_cats)
         .order_by('id')
         .first()
     )
@@ -132,7 +132,7 @@ def save_module(user, years, module):
                 user=user,
                 year=years[academic_year].year,
                 module_code=module_code,
-                assessment_group_code=assessment_group,
+                assessment_group_code=assessment_group_code,
                 academic_year=academic_year
             )
             return       
