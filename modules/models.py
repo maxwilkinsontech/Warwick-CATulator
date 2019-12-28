@@ -10,7 +10,7 @@ class Course(models.Model):
 
     Model to store data about a student's course.
     """
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     course_name = models.CharField(max_length=200)
     course_year_length = models.IntegerField()
 
