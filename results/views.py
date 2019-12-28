@@ -15,6 +15,7 @@ from .utils import get_or_create_year
 from .forms import ModuleForm
 from modules.models import Module, AssessmentGroup
 from users.models import User
+from users.tabula import retreive_member_infomation
 
 
 def home(request):
@@ -32,7 +33,7 @@ def dashboard(request):
 def user_dashboard(request, user_id):
     """Display a given user's modules"""
     user = get_object_or_404(User, user_id=user_id)
-    user.retreive_member_infomation()
+    retreive_member_infomation(user)
     unknown_modules = user.unknown_modules.all()
 
     return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules, 'user': user})
