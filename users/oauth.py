@@ -68,11 +68,11 @@ def exchange_access_token(oauth_token, returned_url, user_id):
             access_token=access_tokens['oauth_token'],
             access_token_secret=access_tokens['oauth_token_secret']
         )
-        retreive_member_infomation(user)
+        retreive_member_infomation(user, created=True)
     else:
         user.access_token = access_tokens['oauth_token']
         user.access_token_secret = access_tokens['oauth_token_secret']
         user.save()
-        retreive_member_infomation(user, created=False)
+        retreive_member_infomation(user)
 
     return user

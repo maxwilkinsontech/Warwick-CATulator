@@ -5,7 +5,7 @@ from users.models import User, TabulaDump
 
 TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
 
-def retreive_member_infomation(user, created=True):
+def retreive_member_infomation(user, created=False):
     """
     This method is used to populate the user's profile with infomation from
     Tabula. The argument 'created' is used to tell the method if the user's 
@@ -38,11 +38,12 @@ def save_course_infomation(user, data, created):
     Get user's active course: marked with mostSignificant=true.
     """
     courses = data['studentCourseDetails']
-    course = courses[-1]
+    course = courses[0]
+
     if len(courses) > 1:
         for poss_course in courses:
-            if course['mostSignificant']:
-                course = poss_course 
+            if course['mostSignificant'] == True:
+                course = poss_course
                 break
 
     course_year_length = course['courseYearLength']
@@ -91,7 +92,7 @@ def save_module(user, years, module):
     module_cats = module['cats']
     academic_year = module['academicYear']
     assessment_group_code = module['assessmentGroup']
-    
+    # get the data about the module
     module_info = (
         Module
         .objects
@@ -116,7 +117,7 @@ def save_module(user, years, module):
                 academic_year=academic_year
             )      
             return
-
+    # get the modules assessments and match to the correct one
     assessment_groups = module_info.assessment_groups.all()
     assessment_group = (
         assessment_groups
