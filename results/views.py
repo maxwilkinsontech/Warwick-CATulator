@@ -8,6 +8,7 @@ from django.views.decorators.http import require_POST
 from django.views.generic.edit import ProcessFormView
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.utils.functional import cached_property
 
 from .models import YearGrade, ModuleResult, AssessmentResult
 from .mixins import ModuleResultPermissionMixin
@@ -38,10 +39,20 @@ def user_dashboard(request, user_id):
 
     return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules, 'user': user})
 
-class ViewModuleResult(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
+class ViewModuleResultExperimental(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
+    """Retrive a ModuleResult and display the experimental mode template"""
+    template_name = 'view_module/view_module_result_experimental.html'
+    model = ModuleResult
+
+    @cached_property
+    def assessments(self):
+        """Return the ModuleResults' assessments"""
+        return self.get_object().assessment_results.select_related('assessment').all()
+        
+
+class ViewModuleResult(ViewModuleResultExperimental):
     """Retrive a ModuleResult and update it on a POST request"""
     template_name = 'view_module/view_module_result.html'
-    model = ModuleResult
 
     def post(self, request, slug):
         module_result = self.get_object()
@@ -67,12 +78,6 @@ class ViewModuleResult(LoginRequiredMixin, ModuleResultPermissionMixin, DetailVi
                 assessment.save()
 
         return redirect('view_module_result', module_result.slug)
-
-
-class ViewModuleResultExperimental(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
-    """Retrive a ModuleResult and display the experimental mode template"""
-    template_name = 'view_module/view_module_result_experimental.html'
-    model = ModuleResult
 
 
 @login_required

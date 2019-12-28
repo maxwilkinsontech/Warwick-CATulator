@@ -6,7 +6,7 @@
 		<h5>
 			Module Grade: {{ object.calculate_grade|floatformat:1 }}%
 		</h5>
-		{% if object.result_state != 2 %}
+		{% if object.result_state != 2 and view.assessments %}
 			<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>
 		{% endif %}
 	</div>
@@ -24,7 +24,7 @@
 					<th style="min-width: 110px">Your Results</th>
 				</thead>
 				<tbody>
-					{% for assessment in object.assessment_results.all %}
+					{% for assessment in view.assessments %}
 						<tr>
 							<td>{{ assessment.assessment.assessment_name }}</td>
 							<td>{{ assessment.assessment.percentage.normalize }}%</td>
@@ -37,6 +37,10 @@
 								</div>
 							</td>
 						</tr>
+					{% empty %}
+						<th>This module is not assessed</th>
+						<th>-</th>
+						<th>-</th>
 					{% endfor %}
 				</tbody>
 			</table>
@@ -44,7 +48,7 @@
 		<button type="submit" class="btn btn-primary mx-2 float-right">Save</button>
 		<button type="button" class="btn btn-danger float-right" data-toggle="modal" data-target="#deleteWarningModel">
 			Delete
-		</button>
+		</button>		
 	</form>
 
 	<!-- Delete Module Result Modal -->
