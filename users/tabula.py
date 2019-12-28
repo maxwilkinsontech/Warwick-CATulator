@@ -38,22 +38,23 @@ def save_course_infomation(user, data, created):
     Get user's active course: marked with mostSignificant=true.
     """
     courses = data['studentCourseDetails']
-    course = courses[0]
+    course = [x for x in courses if x['mostSignificant'] == True]
+    if len(course) > 0:
+        course = course[0]
+        course_year_length = course['courseYearLength']
+        course_name = course['course']['name']
 
-    if len(courses) > 1:
-        for poss_course in courses:
-            if course['mostSignificant'] == True:
-                course = poss_course
-                break
-
-    course_year_length = course['courseYearLength']
-    course_name = course['course']['name']
-
-    Course.objects.get_or_create(
-        user=user,
-        course_name=course_name,
-        course_year_length=course_year_length
-    )
+        Course.objects.get_or_create(
+            user=user,
+            course_name=course_name,
+            course_year_length=course_year_length
+        )
+    else:
+        Course.objects.get_or_create(
+            user=user,
+            course_name='ERROR',
+            course_year_length=0
+        )
 
     years = get_years(user, course['studentCourseYearDetails'])
     modules = course['moduleRegistrations']
@@ -92,6 +93,7 @@ def save_module(user, years, module):
     module_cats = module['cats']
     academic_year = module['academicYear']
     assessment_group_code = module['assessmentGroup']
+
     # get the data about the module
     module_info = (
         Module
@@ -104,18 +106,18 @@ def save_module(user, years, module):
         module_info = (
             Module
             .objects
-            .filter(module_code=module_code.upper(), academic_year='19/20')
-            .order_by('id')
+            .filter(module_code=module_code.upper())
+            .order_by('academic_year')
             .first()
         )
         if module_info is None:
             UndefinedModule.objects.get_or_create(
                 user=user,
                 year=years[academic_year].year,
-                module_code=module_code,
+                module_code=module_code.upper(),
                 assessment_group_code=assessment_group_code,
                 academic_year=academic_year
-            )      
+            )
             return
     # get the modules assessments and match to the correct one
     assessment_groups = module_info.assessment_groups.all()
@@ -126,17 +128,17 @@ def save_module(user, years, module):
         .first()
     )
     if assessment_group is None:
-        if assessment_groups.count() == 1:
+        if assessment_groups.count() > 0:
             assessment_group = assessment_groups.first()
         else:
             UndefinedModule.objects.get_or_create(
                 user=user,
                 year=years[academic_year].year,
-                module_code=module_code,
+                module_code=module_code.upper(),
                 assessment_group_code=assessment_group_code,
                 academic_year=academic_year
             )
-            return       
+            return
 
     ModuleResult.objects.create(
         user=user,
