@@ -32,6 +32,7 @@ def dashboard(request):
 def user_dashboard(request, user_id):
     """Display a given user's modules"""
     user = get_object_or_404(User, user_id=user_id)
+    user.retreive_member_infomation()
     unknown_modules = user.unknown_modules.all()
 
     return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules, 'user': user})
