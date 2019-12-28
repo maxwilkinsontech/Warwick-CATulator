@@ -1,23 +1,27 @@
-from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 
 from .scrapper import start, get_modules, get_1920_diff_modules
 from .models import UndefinedModule, Module
 from results.models import ModuleResult
 from results.utils import get_or_create_year
-from .fix import get_all_modules
 
-@staff_member_required
 def start_module_scrape(request):
-    get_all_modules()
-    return render(request, 'index.html')
+    # count_modules()
+    # start()
+    #get_modules()
+    # get_1920_diff_modules()    
+	return render(request, 'index.html')
 
-@staff_member_required
+@login_required
 def update_unknown_modules(request):
     """
     When a Module is created for a user that was missing a module, visit this 
     view to add the newly created module to their profile.
     """
+    if not request.user.is_superuser:
+        return redirect('dashboard')
+
     undefined_modules = UndefinedModule.objects.all()
     undefined_modules_unique = undefined_modules.values_list('module_code', flat=True).distinct()
 
