@@ -34,7 +34,7 @@ def user_dashboard(request, user_id):
     user = get_object_or_404(User, user_id=user_id)
     unknown_modules = user.unknown_modules.all()
 
-    return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules})
+    return render(request, 'user_dashboard.html', {'unknown_modules': unknown_modules, 'user': user})
 
 class ViewModuleResult(LoginRequiredMixin, ModuleResultPermissionMixin, DetailView):
     """Retrive a ModuleResult and update it on a POST request"""
