@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.postgres.fields import JSONField
 from requests_oauthlib import OAuth1Session
 from django.conf import settings
 from django.db import models
@@ -70,7 +71,7 @@ class TabulaDump(models.Model):
     Model to store the raw json returned from the Tabula endpoint.
     """
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    data = models.JSONField()
+    data = JSONField()
 
 class RequestTokenStore(models.Model):
     """
