@@ -160,5 +160,7 @@ if not DEBUG:
     )
 
 # dbbackup settings
-DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': '/backups/'}
+DBBACKUP_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
+DBBACKUP_STORAGE_OPTIONS = {
+    'oauth2_access_token': '2nn6U8tiFsYAAAAAAAAAG1BKh8y1AnbPmS5eGGqUEZeySNbrmOZuEZXMEDIJb_G0',
+}
