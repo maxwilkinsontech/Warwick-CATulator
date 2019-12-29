@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.humanize',
 
     'dbbackup',
+    'django_cron',
 
     'users',
     'modules',
@@ -164,3 +165,8 @@ DBBACKUP_STORAGE = 'storages.backends.dropbox.DropBoxStorage'
 DBBACKUP_STORAGE_OPTIONS = {
     'oauth2_access_token': config('DROPBOX_OAUTH_TOKEN'),
 }
+
+# automatic backup
+CRON_CLASSES = [
+    "users.cron.Backup",
+]
