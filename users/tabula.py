@@ -153,13 +153,19 @@ def get_years(user, years):
     Return a dict with the academic year and corrosponding YearGrade of the
     user's course.
     """
+    academic_years = [x[0] for x in Module.ACADEMIC_YEARS]
+    current_year = max([[x['yearOfStudy'], x['academicYear']] for x in years], key=lambda x: x[0])
+    current_year_academic_index = academic_years.index(current_year[1])
     years_dict = {}
 
-    for year in years:
+    for year in range(1, current_year[0]+1):
         year_grade, created = YearGrade.objects.get_or_create(
             user=user,
-            year=year['yearOfStudy']
+            year=year
         )
-        years_dict[year['academicYear']] = year_grade
+        # get the academic year for the year based upon the current years' academic year.
+        year_diff = current_year[0] - year
+        academic_year = academic_years[current_year_academic_index + year_diff]
+        years_dict[academic_year] = year_grade
 
     return years_dict
