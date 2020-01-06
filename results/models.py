@@ -31,9 +31,10 @@ class YearGrade(models.Model):
         """
         total_cats = 0
         unweighted_grade = 0
-        for module in self.module_result_years.all():
-            total_cats += module.assessment_group.module_cats
-            unweighted_grade += module.assessment_group.module_cats * module.calculate_grade() 
+        for module in self.module_result_years.select_related('assessment_group').all():
+            module_cats = module.assessment_group.module_cats
+            total_cats += module_cats
+            unweighted_grade += module_cats * module.grade
 
         if total_cats == 0:
             return total_cats
@@ -55,7 +56,7 @@ class ModuleResult(models.Model):
     :model:'modules.AssessmentGroup'
 
     ModuleResult stores the reverse ForeignKeys to the Assessment results
-    as well as other data about the Module grade. 
+    as well as other data about the Module grade.
     """
     slug = models.SlugField(max_length=8, unique=True, blank=True, editable=False)
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='module_results')
@@ -63,12 +64,10 @@ class ModuleResult(models.Model):
     module = models.ForeignKey(Module, on_delete=models.CASCADE, related_name='module_result_modules')
     assessment_group = models.ForeignKey(AssessmentGroup, on_delete=models.CASCADE, related_name='module_result_groups')
     academic_year = models.CharField(max_length=5, choices=Module.ACADEMIC_YEARS, default='19/20')
-
-    class Meta:
-        ordering = ['module']
+    grade = models.DecimalField(max_digits=4, decimal_places=1, default=0)
 
     def __str__(self):
-        return self.module.module_code
+        return self.module.module_code + ' [' + self.academic_year + ']'
 
     def save(self, *args, **kwargs):
         """
@@ -85,7 +84,9 @@ class ModuleResult(models.Model):
 
     def calculate_grade(self):
         """
-        Calculate the grade the user has achived in this module so far. 
+        Calculate and save the grade the user has achived in this module so far. This
+        method is called every time the user makes a change to the associated 
+        AssessmentResults.
         """
         grade = 0
         module_results = self.assessment_results.all()
@@ -94,7 +95,8 @@ class ModuleResult(models.Model):
             if result.result is not None:
                 grade += (result.result * result.assessment.percentage) / 100
 
-        return grade
+        self.grade = grade
+        self.save()
 
     def result_state(self):
         """
@@ -153,3 +155,8 @@ def add_assessments_after_created(sender, instance, created, **kwargs):
                 module_result=instance,
                 assessment_id=assessment.id,
             )
+
+@receiver(post_save, sender=AssessmentResult)
+def update_module_grade(sender, instance, created, **kwargs):
+    if not created:
+        instance.module_result.calculate_grade()

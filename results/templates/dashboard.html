@@ -46,7 +46,7 @@
 						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
 						<div class="card-body py-2 px-3" style="height: 200px; overflow: hidden;">
 							<h5 class="">{{ result.module.module_name }}</h5>
-							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.calculate_grade|floatformat:1 }}%</h6>
+							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.grade }}%</h6>
 							<p class="card-text">
 								<ul style="padding: 0; list-style-type: none;">
 									{% for assessment in result.assessment_results.all %}
@@ -70,7 +70,7 @@
 						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
 						<div class="card-body py-2 px-3" style="overflow: hidden;">
 							<h5 class="">{{ result.module.module_name }}</h5>
-							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.calculate_grade|floatformat:1 }}%</h6>
+							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.grade }}%</h6>
 						</div>
 						<div class="card-footer"><a href="{% url 'view_module_result' result.slug %}" class="card-link">View Module</a>
 						</div>
