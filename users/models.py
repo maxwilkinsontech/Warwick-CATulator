@@ -66,6 +66,12 @@ class User(AbstractUser):
         )
         return oauth
 
+    def years(self):
+        """
+        Returns the user's YearGrades.
+        """
+        return self.grades.prefetch_related('module_result_years').all()
+
 class TabulaDump(models.Model):
     """
     Model to store the raw json returned from the Tabula endpoint.
