@@ -56,7 +56,7 @@ class User(AbstractUser):
     def get_oauth_session(self):
         """
         Return a OAuthSession to be used for requests to the Tabula API.
-        """ 
+        """
         oauth = OAuth1Session(
             settings.CONSUMER_KEY, 
             settings.CONSUMER_SECRET,
@@ -71,16 +71,6 @@ class User(AbstractUser):
         Returns the user's YearGrades.
         """
         return self.grades.prefetch_related('module_result_years').all()
-
-class TabulaDump(models.Model):
-    """
-    Model to store the raw json returned from the Tabula endpoint.
-    """
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    data = JSONField()
-
-    def __str__(self):
-        return self.user.get_full_name()
 
 class RequestTokenStore(models.Model):
     """

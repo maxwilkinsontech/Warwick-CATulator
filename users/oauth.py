@@ -61,7 +61,7 @@ def exchange_access_token(oauth_token, returned_url, user_id):
 
     user = User.objects.filter(user_id=user_id).first()
     if user is None:
-        # email will be set to their actual email in retreive_member_infomation()
+        # email will be set to their actual email in retreive_member_infomation().
         user = User.objects.create(
             email=user_id+'@email.com',
             user_id=user_id,
@@ -75,4 +75,9 @@ def exchange_access_token(oauth_token, returned_url, user_id):
         user.save()
         retreive_member_infomation(user)
 
+    # delete tokens from account as not needed anymore.
+    user.access_token = ''
+    user.access_token_secret = ''
+    user.save()
+    # send user object back to view to be logged in.
     return user
