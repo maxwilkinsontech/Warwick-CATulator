@@ -79,6 +79,8 @@
         </div>
         {% block extra_content %}{% endblock %}
     </div>
+
+    
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"
         integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" 
@@ -91,5 +93,13 @@
         crossorigin="anonymous"></script>
     {% block scripts %}{% endblock %}
 </body>
+
+<footer>
+    <div class="container">
+        <small> Copyright &copy; 2020, Max Wilkinson. All Rights Reserved. </small>
+        <small>- <a href="{% url 'contact' %}" style="color: inherit;">Report error, bug or suggestion. </a></small>
+        <small>- <a href="https://github.com/Maxamuss/Warwick-CATulator" style="color: inherit;">Project GitHub</a></small>
+    </div>
+</footer>
 
 </html>
