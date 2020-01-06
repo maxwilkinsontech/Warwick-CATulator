@@ -26,7 +26,7 @@ def home(request):
 @login_required
 def dashboard(request):
     """Display the user's Modules"""
-    unknown_modules = request.user.unknown_modules.all()
+    unknown_modules = request.user.unknown_modules.values_list('module_code', flat=True)
 
     return render(request, 'dashboard.html', {'unknown_modules': unknown_modules})
 
