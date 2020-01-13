@@ -20,7 +20,7 @@ def login_view(request):
     Redirect the user to authorize the request token via logging in to their 
     Warwick ITS account. They will be directed back to the callback argument.
     """
-    url = obtain_request_token(callback='https://warwickcatulator.co.uk/callback')
+    url = obtain_request_token(callback='http://127.0.0.1:8000/callback')
     return redirect(url)
 
 

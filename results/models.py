@@ -113,6 +113,8 @@ class ModuleResult(models.Model):
                 assessments_completed += 1
 
         if assessments_completed == 0:
+            if self.grade != 0:
+                return 2
             return 1
         elif assessments_completed == assessments.count():
             return 2
