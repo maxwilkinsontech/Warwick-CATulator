@@ -22,7 +22,6 @@ from users.tabula import retreive_member_infomation
 def home(request):
     return render(request, 'index.html')
 
-@login_required
 def contact(request):
     return render(request, 'contact.html')
 
