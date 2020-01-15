@@ -58,6 +58,7 @@
                             {{ request.user.get_full_name }}
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+                            <a class="dropdown-item" href="{% url 'settings' %}">Settings</a>
                             <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                         </div>
                     </li>
