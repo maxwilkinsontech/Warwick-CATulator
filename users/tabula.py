@@ -1,6 +1,6 @@
 from modules.models import Course, Module, AssessmentGroup, UndefinedModule
 from results.models import ModuleResult, YearGrade
-from users.models import User, TabulaDump
+from users.models import User
 
 
 TABULAR_URL = 'https://tabula.warwick.ac.uk/api/v1/member/me'
@@ -14,7 +14,6 @@ def retreive_member_infomation(user, created=False):
     oauth = user.get_oauth_session()
     response = oauth.request("GET", TABULAR_URL)
     data = response.json()['member']
-    save_json(user, data)
     # save basic user info
     user.first_name = data['firstName']
     user.last_name = data['lastName']
@@ -22,15 +21,6 @@ def retreive_member_infomation(user, created=False):
     user.save()
     # save user's course info
     save_course_infomation(user, data, created)
-
-def save_json(user, data):
-    """
-    Save the returned json data from Tabula to the database.
-    """
-    TabulaDump.objects.create(
-        user=user,
-        data=data
-    )
 
 def save_course_infomation(user, data, created):
     """
@@ -89,15 +79,18 @@ def save_module(user, years, module):
     """
     Create the appropriate models for the modules the student is taking.
     """
+    print(module)
+
     module_code = module['module']['code']
     module_cats = module['cats']
     academic_year = module['academicYear']
     assessment_group_code = module['assessmentGroup']
+    mark = module.get('mark', 0)
+
 
     # get the data about the module
     module_info = (
-        Module
-        .objects
+        Module.objects
         .filter(module_code=module_code.upper(), academic_year=academic_year)
         .order_by('id')
         .first()
@@ -145,7 +138,8 @@ def save_module(user, years, module):
         year=years[academic_year],
         module=module_info,
         assessment_group=assessment_group,
-        academic_year=academic_year
+        academic_year=academic_year,
+        grade=mark
     )
 
 def get_years(user, years):

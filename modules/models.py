@@ -28,6 +28,7 @@ class Module(models.Model):
         ('19/20', '19/20'),
         ('18/19', '18/19'),
         ('17/18', '17/18'),
+        ('16/17', '16/17')
     )
 
     academic_year = models.CharField(max_length=5, choices=ACADEMIC_YEARS, default='19/20')

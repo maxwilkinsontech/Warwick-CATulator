@@ -22,11 +22,14 @@ from users.tabula import retreive_member_infomation
 def home(request):
     return render(request, 'index.html')
 
+@login_required
+def contact(request):
+    return render(request, 'contact.html')
 
 @login_required
 def dashboard(request):
     """Display the user's Modules"""
-    unknown_modules = request.user.unknown_modules.all()
+    unknown_modules = request.user.unknown_modules.values_list('module_code', flat=True)
 
     return render(request, 'dashboard.html', {'unknown_modules': unknown_modules})
 

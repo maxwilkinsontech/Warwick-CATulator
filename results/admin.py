@@ -25,6 +25,6 @@ class YearGradeAdmin(admin.ModelAdmin):
     inlines = [ModuleResultInline]
 
 
-admin.site.register(YearGrade, YearGradeAdmin)
-admin.site.register(ModuleResult, ModuleResultAdmin)
-admin.site.register(AssessmentResult)
+# admin.site.register(YearGrade, YearGradeAdmin)
+# admin.site.register(ModuleResult, ModuleResultAdmin)
+# admin.site.register(AssessmentResult)
