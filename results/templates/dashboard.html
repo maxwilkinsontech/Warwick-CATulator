@@ -24,6 +24,8 @@
 		</div>
 	{% endif %}
 
+	<p>Click on a module below to enter assessment results.</p>
+
 	{% for year in request.user.years %}
 		<h5 class="mt-3">{{ year.year|ordinal }} Year Modules <a href="{% url 'select_module' %}"><i class="fas fa-plus"></i></a></h5>
 		Weighted Grade: <b>{{ year.calculate_grade|floatformat:1 }}%</b>
@@ -58,7 +60,7 @@
 						<div class="card-footer"><a href="{% url 'view_module_result' result.slug %}" class="card-link">View Module</a></div>
 					</div>
 				</div>
-				<div class="col-md-6 col-lg-4 col-xl-3 d-md-none">
+				<div class="w-100 mx-1 d-md-none">
 					<div class="card mt-2
 						{% if result.result_state == 1 %}
 							border-danger
@@ -67,13 +69,13 @@
 						{% else %}
 							border-warning
 						{% endif %}">
-						<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
-						<div class="card-body py-2 px-3" style="overflow: hidden;">
-							<h5 class="">{{ result.module.module_name }}</h5>
-							<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.grade }}%</h6>
-						</div>
-						<div class="card-footer"><a href="{% url 'view_module_result' result.slug %}" class="card-link">View Module</a>
-						</div>
+						<a href="{% url 'view_module_result' result.slug %}" style="color: black;">
+							<div class="card-header py-2 px-3">{{ result.module.module_code }}</div>
+							<div class="card-body py-2 px-3" style="overflow: hidden;">
+								<h5 class="">{{ result.module.module_name }}</h5>
+								<h6 class="card-subtitle my-2 text-muted">Grade: {{ result.grade|floatformat:1 }}%</h6>
+							</div>
+						</a>
 					</div>
 				</div>
 			{% empty %}

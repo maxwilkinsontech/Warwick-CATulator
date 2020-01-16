@@ -10,18 +10,21 @@
 			<a href="{% url 'view_module_result_experimental' object.slug %}">try experimental mode</a>
 		{% endif %}
 	</div>
+	<p>Below are the assessments for this module. Enter the result for each assessment and we will automatically update
+		your module and year grade.
+	</p>
 	<form method="POST">
 		{% csrf_token %}
 		<div class="form-group">
 			<label for="yearInput">Year taken</label>
 			<input type="number" min="1" max="10" class="form-control" id="yearInput" name="year" value="{{ object.year.year }}" placeholder="Course year">
 		</div>
-		<div style="overflow-x: auto">
-			<table class="table table-bordered">
+		<div>	
+			<table class="table table-responsive-sm table-bordered">
 				<thead>
-					<th>Assessment Name</th>
+					<th>Assessment</th>
 					<th>Percentage</th>
-					<th style="min-width: 110px">Your Results</th>
+					<th style="min-width: 110px">Results</th>
 				</thead>
 				<tbody>
 					{% for assessment in view.assessments %}
@@ -38,9 +41,11 @@
 							</td>
 						</tr>
 					{% empty %}
-						<th>This module is not assessed</th>
-						<th>-</th>
-						<th>-</th>
+						<tr>
+							<td>This module is not assessed</td>
+							<td>-</td>
+							<td>-</td>
+						</tr>
 					{% endfor %}
 				</tbody>
 			</table>

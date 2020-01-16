@@ -7,8 +7,8 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.views.generic.edit import ProcessFormView
 from django.template.loader import render_to_string
-from django.urls import reverse_lazy
 from django.utils.functional import cached_property
+from django.urls import reverse_lazy
 
 from .models import YearGrade, ModuleResult, AssessmentResult
 from .mixins import ModuleResultPermissionMixin
@@ -22,7 +22,6 @@ from users.tabula import retreive_member_infomation
 def home(request):
     return render(request, 'index.html')
 
-@login_required
 def contact(request):
     return render(request, 'contact.html')
 

@@ -19,6 +19,9 @@ class YearGrade(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='grades')
     year = models.PositiveSmallIntegerField()
 
+    class Meta:
+        ordering = ['-year']
+
     def __str__(self):
         return '[' + str(self.year) + ']' + ' ' + self.user.get_full_name()
 

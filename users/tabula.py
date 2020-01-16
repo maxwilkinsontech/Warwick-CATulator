@@ -79,14 +79,11 @@ def save_module(user, years, module):
     """
     Create the appropriate models for the modules the student is taking.
     """
-    print(module)
-
     module_code = module['module']['code']
     module_cats = module['cats']
     academic_year = module['academicYear']
     assessment_group_code = module['assessmentGroup']
     mark = module.get('mark', 0)
-
 
     # get the data about the module
     module_info = (
