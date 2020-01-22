@@ -20,3 +20,8 @@ I maden this website using the Python web framework Django. I have made several 
 - Nginx, Gunicorn, Supervisor, Postgres, Ubuntu: what I used for the hosting of the web server.
 - Cron: Nightly backups of the database with these dumps uploaded to Dropbox.
 - I tried to follow Django best practices throughout this project. 
+
+
+Copyright (C) Max Wilkinson - All Rights Reserved
+Unauthorized copying of this file, via any medium is strictly prohibited proprietary and confidential
+Written by Max Wilkinson <Max.Wilkinson@warwick.ac.uk>, January 2020
