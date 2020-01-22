@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.conf import settings
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('catmin/', admin.site.urls),
     path('', include('results.urls')),
     path('modules/', include('modules.urls')),
     path('', include('users.urls')),
