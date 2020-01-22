@@ -19,13 +19,16 @@ I maden this website using the Python web framework Django. I have made several 
 - AJAX: used for pulling module data to the front end asynchronously for a smooth user experience.
 - Nginx, Gunicorn, Supervisor, Postgres, Ubuntu: what I used for the hosting of the web server.
 - Cron: Nightly backups of the database with these dumps uploaded to Dropbox.
+- Front end: Used bootstrap to make the site fully responsive. 
 - I tried to follow Django best practices throughout this project. 
 
 #### Screenshots
-Dashboard
+## Dashboard
 ![Dashboard PC](/screenshots/dashboard_pc.PNG)
 ![Dashboard Mobile](/screenshots/dashboard_mobile.PNG)
-
-View Module
-
-View Module (Experimental Mode)
+## View Module
+![View Module PC](/screenshots/view_module_pc.PNG)
+![View Module Mobile](/screenshots/view_module_mobile.PNG)
+## View Module (Experimental Mode)
+![View Module PC](/screenshots/view_module_experimental_pc.PNG)
+![View Module Mobile](/screenshots/view_module_experimental_mobile.PNG)
