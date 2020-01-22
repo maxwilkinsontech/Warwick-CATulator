@@ -26,12 +26,12 @@ I made this website using the Python web framework Django. I have made several o
 - I tried to follow Django best practices throughout this project. 
 
 #### Screenshots
-#### Dashboard
+Dashboard
 ![Dashboard PC](/screenshots/dashboard_pc.PNG)
 ![Dashboard Mobile](/screenshots/dashboard_mobile.PNG)
-#### View Module
+View Module
 ![View Module PC](/screenshots/view_module_pc.PNG)
 ![View Module Mobile](/screenshots/view_module_mobile.PNG)
-#### View Module (Experimental Mode)
+View Module (Experimental Mode)
 ![View Module PC](/screenshots/view_module_experimental_pc.PNG)
 ![View Module Mobile](/screenshots/view_module_experimental_mobile.PNG)
