@@ -23,8 +23,8 @@ I maden this website using the Python web framework Django. I have made several 
 
 #### Screenshots
 Dashboard
-![Dashboard PC](/screenshots/dashboard_pc.png)
-![Dashboard Mobile](/screenshots/dashboard_mobile.png)
+![Dashboard PC](/screenshots/dashboard_pc.PNG)
+![Dashboard Mobile](/screenshots/dashboard_mobile.PNG)
 
 View Module
 
