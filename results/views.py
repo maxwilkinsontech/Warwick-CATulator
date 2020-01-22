@@ -49,7 +49,9 @@ class ViewModuleResultExperimental(LoginRequiredMixin, ModuleResultPermissionMix
     template_name = 'view_module/view_module_result_experimental.html'
     model = ModuleResult
 
-    @cached_property
+    # The cache is not invalidating so server ram getting used up. Investiate
+    # better ways to cache this.
+    # @cached_property
     def assessments(self):
         """Return the ModuleResults' assessments"""
         return self.get_object().assessment_results.select_related('assessment').all()
