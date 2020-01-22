@@ -20,3 +20,12 @@ I maden this website using the Python web framework Django. I have made several 
 - Nginx, Gunicorn, Supervisor, Postgres, Ubuntu: what I used for the hosting of the web server.
 - Cron: Nightly backups of the database with these dumps uploaded to Dropbox.
 - I tried to follow Django best practices throughout this project. 
+
+#### Screenshots
+Dashboard
+![Dashboard PC](/screenshots/dashboard_pc.png)
+![Dashboard Mobile](/screenshots/dashboard_mobile.png)
+
+View Module
+
+View Module (Experimental Mode)
