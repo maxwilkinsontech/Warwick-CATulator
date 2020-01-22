@@ -12,7 +12,7 @@ The CATS (Credit Accumulation and Transfer Scheme) points system is recognised b
 
 #### Implementation
 
-I maden this website using the Python web framework Django. I have made several other sites using Django and love everything about it. An overview of the concepts/tech I used on this project are:
+I made this website using the Python web framework Django. I have made several other sites using Django and love everything about it. An overview of the concepts/tech I used on this project are:
 - OAuth: Integrate SSO with Warwick's Tabula. Access Keys obtained for each user which are they used to make requests to the Tabula API on the user's behalf. 
 - REST APIs: Using the Tabula REST API to get a user's course data. This is then parsed and saved to the database.
 - Web Scraping: To get the infomation about each module (assessment groups, assessments, weights, cats e.t.c). Over 6000 modules logged in my database, spanning 4 academic years. 
