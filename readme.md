@@ -2,6 +2,9 @@
 
 Warwick CATulator is an online tool for Univeristy of Warwick students to log, calculate and predict their module and year grades. The motivation for the site came after hours of meticulous spreadsheeting, research of assessments and formuals just to get an idea of how i'm progressing in my degree. When a friend asked me to do the same thing for them, I knew that there had to be a better way of doing things. 
 
+#### Update 22/01/2020
+Warwick CATulator will no longer be live :(
+
 #### What makes Warwick CATulator special?
 
 There is no short supply of online tools for calculating weighted grades on the internet but what makes my website stand head and shoulders above the rest is that, once a student has logged in with their Warwick IT account, all their modules, assessments and previous grades are automatically displayed meaning that all a student has to do is simply enter the result for each assessment when they get it. Then all module grades are automatically calculated with the correct weightings. No more spreadsheets and complicated formulas needed again.
@@ -23,12 +26,12 @@ I made this website using the Python web framework Django. I have made several o
 - I tried to follow Django best practices throughout this project. 
 
 #### Screenshots
-## Dashboard
+#### Dashboard
 ![Dashboard PC](/screenshots/dashboard_pc.PNG)
 ![Dashboard Mobile](/screenshots/dashboard_mobile.PNG)
-## View Module
+#### View Module
 ![View Module PC](/screenshots/view_module_pc.PNG)
 ![View Module Mobile](/screenshots/view_module_mobile.PNG)
-## View Module (Experimental Mode)
+#### View Module (Experimental Mode)
 ![View Module PC](/screenshots/view_module_experimental_pc.PNG)
 ![View Module Mobile](/screenshots/view_module_experimental_mobile.PNG)
