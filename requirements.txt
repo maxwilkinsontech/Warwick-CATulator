@@ -3,7 +3,7 @@ bs4==0.0.1
 certifi==2019.9.11
 chardet==3.0.4
 defusedxml==0.6.0
-Django==2.2.8
+Django==2.2.21
 django-common-helpers==0.9.2
 django-cron==0.5.1
 django-dbbackup==3.2.0
